@@ -24,9 +24,12 @@ p_c <- import(infile_pres) %>%
     -starts_with("ID")
   ) %>%
   #to make it better looking :)
-  relocate(Modalidade, .after = Cidade)
+  relocate(Modalidade, .after = Cidade) %>%
+  #to ease vis
+  mutate(Modalidade = factor(Modalidade,
+                             levels = c("FNM", "SGR", "SGR + FNM")))
 
-#View(p_c)
+
 
 #export -----------------------------------------------------------------------
 export(p_c, exfile)

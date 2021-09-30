@@ -5,11 +5,10 @@ download_UI <- function(id){
   tagList( #module trends
     
     actionButton(NS(id, "btn_refresh"), "Atualizar dados"),
-    downloadButton(NS(id, "btn_download"), "Baixe os dados para o seu computador"),
+    downloadButton(NS(id, "btn_download"), "Baixe os dados para o seu computador")
+    #hr(),
     
-    hr(),
-    
-    DTOutput(NS(id,"data_preview"))
+    #DTOutput(NS(id,"data_preview"))
     
     
   )
@@ -39,15 +38,15 @@ download_server <- function(id){
     
     
     #check data
-    output$data_preview <- DT::renderDataTable({
-      
-      datatable(
-      rv$presencas_db,
-      rownames = F,
-      options = list(pageLength = 100)
-      )
-      
-    })
+    # output$data_preview <- DT::renderDataTable({
+    #   
+    #   datatable(
+    #   rv$presencas_db,
+    #   rownames = F,
+    #   options = list(pageLength = 100)
+    #   )
+    #   
+    # })
   
     
     #download data ------------------------------------
