@@ -1,0 +1,55 @@
+
+body{
+  font-family: 'Montserrat', sans-serif;
+  padding: 0 100px;
+  /*to fix the navbar:*/
+  /*padding-top: 200px;*/
+}
+
+
+.navbar{
+ 
+ margin-top: 80px;
+ padding: 0 100px;
+  
+}
+
+.tab-content{
+  margin-top: 200px;
+}
+
+.site_id {
+    font-size: 18pt;
+    font-weight: bold;
+    color: "black";
+}
+
+.site_head{
+    padding-bottom: 50px;
+    padding-left: 100px;
+    padding-right: 100px;
+    position: fixed;
+    right: 0;
+    left: 0;
+    z-index: 1030;
+    background-color: white;
+  
+}
+
+
+/*Botons -----------------------------------------------------------*/
+
+#dwnld-btn_download {
+  
+  margin-left: 50px;
+  color: white;
+  background-color: #3987D9
+}
+
+
+#dwnld-btn_refresh {
+  
+  color: white;
+  background-color: #33BC6E
+}
+

@@ -12,10 +12,12 @@ exfile <- file.path(dir_data_dash, "precensas_dash.rds")
 
 t_c <- import(infile_turmas)
 
+
 p_c <- import(infile_pres) %>%
   #Create Presente and Ausente
   mutate(Presente = Status == "Presente",
-         Ausente = Status == "Ausente") %>%
+         Ausente = Status == "Ausente",
+         Atrasado = Status == "Atrasada") %>%
   #fetch Modalidade
   left_join(t_c, by = "Turma") %>%
   select(
@@ -24,7 +26,7 @@ p_c <- import(infile_pres) %>%
   #to make it better looking :)
   relocate(Modalidade, .after = Cidade)
 
-
+#View(p_c)
 
 #export -----------------------------------------------------------------------
 export(p_c, exfile)

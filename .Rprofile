@@ -1,6 +1,7 @@
 cli::cli_alert_success("realiza by MUVA")
 
 options("scipen"=100, digits = 2)
+Sys.setlocale("LC_ALL","Portuguese")
 
 #define libraries --------------------------------------------------------------
 libraries <- c(
@@ -17,7 +18,7 @@ libraries <- c(
   "dplyr", "tidyr", "stringr",
   
   #carpintery
-  "lubridate", "janitor", "forcats",
+  "lubridate", "janitor", "forcats", "gmdacr",
   
   
   #other
@@ -45,3 +46,5 @@ suppressWarnings({
   )
   )
 })
+
+gmdacr::load_functions('functions')

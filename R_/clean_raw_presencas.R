@@ -15,22 +15,31 @@ p_r <- import(infile)
 p_c <- p_r %>%
   #remove AsistenciaID. from naes 
   rename_at(vars(starts_with("AsistenciaID.")), function(x)str_remove(x, "AsistenciaID.")) %>%
-  #unlist variables
+  #unlist variables -------
   mutate_if(is.list,unlist) %>%
-  #trim names
-  mutate(Empreendedora = str_trim(Emprendedora)) %>%
   #drop missing records
-  filter(Cidade !="") %>%
-  #rename and reorder
+  filter(apply(., MARGIN = 1, function(x) sum(is.na(x)| x == ""))==0) %>%
+  #rename and reorder -------
   select(
-    ID_lista = ID,
-    ID_asistencia = AsistenciaID,
+    #ID_lista = ID,
+    #ID_asistencia = AsistenciaID,
     Cidade,
     Turma,
+    Facilitadora,
     Emprendedora,
     Date = Date_field,
     Status
-  )
+  ) %>%
+  #Format variables correctly -------
+  mutate(Empreendedora = str_trim(Emprendedora),
+         Date = dmy(Date),
+         Date_label = format(Date, "%e %b %y"),
+         month = month(Date, label = T, abbr = F)) %>%
+  arrange(Date, Turma, Emprendedora)
 
+
+
+#Export =======================================================================
 
 export(p_c, exfile)
+
