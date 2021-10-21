@@ -1,7 +1,6 @@
 options("scipen"=100, digits = 2)
 Sys.setlocale("LC_ALL","Portuguese")
 
-git 
  library(shiny)
  library(DT)
 # library(httr)
@@ -17,6 +16,7 @@ git
 # library(gmdacr)
 # library(rio)
 # library(glue)
+
 
 gmdacr::load_functions("modules")
 gmdacr::load_functions("functions")
