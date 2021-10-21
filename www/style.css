@@ -1,7 +1,7 @@
 
 body{
   font-family: 'Montserrat', sans-serif;
-  padding: 0 100px;
+  padding: 0 50px;
   /*to fix the navbar:*/
   /*padding-top: 200px;*/
 }
@@ -37,19 +37,90 @@ body{
 }
 
 
+/*================tables=============================================*/
+
+table{
+  font-size: 1rem;
+}
+
+label{
+  
+  font-size: 1rem;
+}
+
 /*Botons -----------------------------------------------------------*/
 
-#dwnld-btn_download {
+.container-bottons{
+    float: right;
+    position:absolute;
+    right:30px;
+    top:150px   
+}
+
+
+.refresh{
+    position: relative;
+    bottom: 40px;
+}
+
+
+#btn_download {
   
   margin-left: 50px;
   color: white;
-  background-color: #3987D9
+  background-color: #2A81CB
 }
 
 
-#dwnld-btn_refresh {
+#btn_refresh {
   
   color: white;
-  background-color: #33BC6E
+  background-color: #3AA757;
 }
 
+
+/*==========================circles==============================*/
+
+.dot {
+  height: 10px;
+  width: 10px;
+  border-radius: 100%;
+  display: inline-block;
+}
+
+.green{
+  
+  background-color: #3AA757;
+}
+
+.yellow{
+  
+  background-color: #EFB700;
+}
+
+.red{
+  background-color: #EA4335;
+}
+
+/*==========================Selectors========================================*/
+.form-group{
+  margin:auto;
+}
+
+/*=======================Select input =====================================*/
+
+.option{
+  font-size:1rem;
+}
+
+.item{
+  font-size:1.2rem;
+}
+
+.option{
+  font-size:1rem;
+}
+
+.selectize-input{
+ width: 200px;
+}

@@ -55,7 +55,7 @@ theme_realiza <- function(){
     axis.text.y = element_text(angle = 90),
     axis.ticks = element_blank(),
     #title
-    plot.title = element_text(face = "bold", size = 16),
+    plot.title = element_text(size = 16),
     #caption
     plot.caption.position = "plot",
     plot.caption = element_text(hjust = 1)

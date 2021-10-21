@@ -8,6 +8,7 @@ head_UI <- function(id){
     
     tags$head(
       #font from google
+      tags$meta(charset = "utf-8"),
       tags$title("Tracker realiza"),
       tags$link(rel="preconnect", href="https://fonts.gstatic.com"),
       tags$link(href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@100;300&display=swap", rel="stylesheet"),
@@ -28,7 +29,7 @@ head_UI <- function(id){
     
       <div class="box left site_id">
         <span style="">
-        Tracker de atendimineto do programa realiza
+        Monitoria de atendimineto do programa realiza
         </span>
       </div>
         
@@ -36,7 +37,7 @@ head_UI <- function(id){
         <span style="">
           Powered by:
         </span>
-        <img src="https://i.ibb.co/3k8HWVS/cropped-pulpo.png" width="150" height="33">
+        <img src="/images/pulpodata-bw.png" width="150px">
       </div>
     </div>
 

@@ -9,7 +9,6 @@ exfile <- file.path(dir_clean, "precensas_clean.rds")
 
 p_r <- import(infile)
 
-
 #clean presencas
 
 p_c <- p_r %>%
@@ -28,7 +27,8 @@ p_c <- p_r %>%
     Facilitadora,
     Emprendedora,
     Date = Date_field,
-    Status
+    Status,
+    Status_Parceiro = Presenca_parceiro
   ) %>%
   #Format variables correctly -------
   mutate(Empreendedora = str_trim(Emprendedora),

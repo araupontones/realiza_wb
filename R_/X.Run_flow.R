@@ -15,3 +15,4 @@ source("R_/clean_raw_turmas.R", encoding = "UTF-8")
 #3. create indicators for dashboard --------------------------------------------
 
 source("R_/create_indicators.R", encoding = "UTF-8")
+source("R_/create_table_resumo.R", encoding = "UTF-8")

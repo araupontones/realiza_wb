@@ -4,7 +4,7 @@ plot_line <- function(.data,
                       y_var,
                       color_var,
                       pallete = c(color_FMN, color_SGR, color_fmn_sgr),
-                      titulo = "Tendência de presença por modalidade"
+                      titulo = "Tendência de Presença por Modalidade"
 ){
   
   .data %>%
