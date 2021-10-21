@@ -35,5 +35,5 @@ vct_modalidade <- sort(levels(s$Modalidade))
 rio::export(s, exfile)
 rio::export(vct_modalidade, ex_modalidade)
 
-View(s)
+
 
