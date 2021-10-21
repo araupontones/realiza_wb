@@ -37,7 +37,7 @@ head_UI <- function(id){
         <span style="">
           Powered by:
         </span>
-        <img src="/images/pulpodata-bw.png" width="150px">
+        <img src="images/pulpodata-bw.png" width="150px">
       </div>
     </div>
 

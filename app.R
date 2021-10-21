@@ -2,8 +2,8 @@ options("scipen"=100, digits = 2)
 Sys.setlocale("LC_ALL","Portuguese")
 
 # 
-# library(shiny)
-# library(DT)
+ library(shiny)
+ library(DT)
 # library(httr)
 # library(jsonlite)
 # library(zohor)
