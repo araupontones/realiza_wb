@@ -1,7 +1,7 @@
 library(grDevices)
 library(extrafont)
 library(ggplot2)
-extrafont::loadfonts(dev = 'win', quiet = T)
+#extrafont::loadfonts(dev = 'win', quiet = T)
 
 caption = "Dados: Dados administrativos do programa realiza | 2021"
 
