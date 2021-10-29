@@ -40,7 +40,7 @@ p_c <- import(infile_pres) %>%
   #viz last 5 status
   arrange(Date, Turma, Emprendedora) %>%
   group_by(Turma, Emprendedora) %>%
-  mutate(Last_5 = paste(icon, lag(icon,1),  lag(icon,2),  lag(icon,3),  lag(icon,4),  lag(icon,5)),
+  mutate(Last_5 = paste(icon, lag(icon,1),  lag(icon,2),  lag(icon,3),  lag(icon,4)),
          Last_5 = str_remove_all(Last_5, "NA"),
          Last_5 = paste0('<div style="text-align:center">', Last_5, '</div>')
   ) %>%

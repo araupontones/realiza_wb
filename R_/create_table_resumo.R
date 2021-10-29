@@ -8,7 +8,7 @@ r <- rio::import(infile)
 
 
 #summary by turma and emprendedora ==================================================
-names(r)
+
 
 s <- r %>%
   group_by(Modalidade, Turma, Emprendedora) %>%

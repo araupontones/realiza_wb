@@ -10,6 +10,7 @@ font <- "Montserrat"
 font_light <- "Montserrat Light"
 
 #themes
+color_main <- "#ff4c68"
 blue_navy <- "#183668" 
 blue_sky <- "#007DBC"
 blue_ligth <- "#00AED9"
@@ -55,7 +56,7 @@ theme_realiza <- function(){
     axis.text.y = element_text(angle = 90),
     axis.ticks = element_blank(),
     #title
-    plot.title = element_text(size = 16),
+    plot.title = element_text(size = 16, hjust = .5),
     #caption
     plot.caption.position = "plot",
     plot.caption = element_text(hjust = 1)
