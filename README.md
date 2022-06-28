@@ -12,7 +12,7 @@ Attendance tracker for the realiza program
 
 -   Nampula
 
-## Arms/Turmas
+## Grupos
 
 -   SGR : = Realiza & Cresça
 -   SGR + FNM : Realiza & Movimenta
@@ -69,9 +69,65 @@ different activities every two months (during the individual sessions).
 -   The agente schedules the activity of each emprendedora every two
     months
 
+## Facilitadoras
+
+Details of facilitadoras, associated with Turmas
+
 ## Actividades
 
 **Preguntas**
+
+## Emprendedoras
+
+Personal details of emprendedoras, associated with cidade, turma, agente
+
+## Parceiros
+
+Details of parceiros, associated with tematicas and sectores.
+
+## Follow ups
+
+Via phone or during the one to one sessions.
+
+-   Consigio informacao
+
+-   Engago com contacto
+
+-   Consiguio servicios
+
+# Dashboard
+
+To manage the implementation:
+
+-   Schedule events and activities
+
+-   See the agenda of the participants
+
+-   Track attendance: every fatla, a MSN will be sent, every 2 faltas, a
+    follow up call should be trigger
+
+# Roles and responsibilities
+
+## Data manager
+
+This person is responsible to guarantee that all the data is enter
+timely and with no errors into the database. They will have to
+coordinate with the agentes, facilitadoras, and all the stakeholders
+during the whole time of the implementation.
+
+Moreover, they will be in charge of populating the information of the
+emprendedoras (associate them to a turma and to their agente).
+
+## Agentes
+
+They will be responsible to schedule the events and activities of their
+participants every two months and to report their attendance status for
+each of these activities.
+
+## Facilitadoras
+
+How do the sessoes fixas work? are they divided into groups? How many
+groups per city? And names?
 
 # Useful resources
 
