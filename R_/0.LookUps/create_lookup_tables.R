@@ -2,19 +2,18 @@
 source("functions/download_all_reports.R")
 library(rio)
 
-exdir <- "implementation/data/look ups"
-
-facilitadoras <- "Facilitadoras_Report"
-grupos <- "Grupos_Report"
+exdir <- "data/0look_ups"
+create_dir_(exdir)
 
 
-fac_zoho <- download_realiza(facilitadoras)
-grupos_zoho <- download_realiza(grupos)
+
+#read data from zoho 
+fac_zoho <- download_realiza("Facilitadoras_Report")
+grupos_zoho <- download_realiza("Grupos_Report")
 turmas_zoho <- download_realiza("Turmas_fixas_report")
+actividades_zoho <- download_realiza("Actividades_Report")
 
-View(turmas_zoho)
 
-View(grupos_zoho)
 #Look Up agentes ===============================================================
 
 agentes <- fac_zoho %>% 
@@ -24,7 +23,22 @@ agentes <- fac_zoho %>%
 
 
 
+
 export(agentes, file.path(exdir, "agentes.rds"))
+
+
+
+# Look Up facilitadoras =======================================================
+facilitadoras <- fac_zoho %>% 
+  filter(Roles == "Facilitadora") %>%
+  select(ID_facilitadora = ID,
+         Facilitadora = Facilitadora)
+
+
+
+
+export(facilitadoras, file.path(exdir, "facilitadoras.rds"))
+
 
 
 #Look Up Cidade ==============================================================
@@ -52,3 +66,16 @@ turmas <- turmas_zoho %>%
          ID_Turma = ID)
 
 export(turmas, file.path(exdir, "turmas.rds"))
+
+#Actividades =================================================================
+View(actividades_zoho)
+
+actividades <- actividades_zoho %>%
+  select(actividade,
+         ID_actividade = ID, 
+         por,
+         Grupal_o_individual,
+         sessoes = sessoies_obrigatorias)
+
+export(actividades, file.path(exdir, "actividades.rds"))
+

@@ -1,5 +1,18 @@
 # Realiza
 
+# Dependencies
+plyr,dplyr, httr, jsonlite,rio, araupontones/gmdacr
+
+# Dashboard
+
+## Look up tables
+
+This are created once via `R_/0.LookUps/create_lookup_tables.R`. Run this file to update the look up tables. The lookup tables are saved in `data/0look_ups`
+
+
+
+
+
 Attendance tracker for the realiza program
 
 # Data base
