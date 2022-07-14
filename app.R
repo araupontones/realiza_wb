@@ -1,5 +1,6 @@
 library(shiny)
 library(dplyr)
+library(shinythemes)
 
 ui <- fluidPage(
 
@@ -7,15 +8,17 @@ ui <- fluidPage(
     tags$link(rel = "stylesheet", href = "style.css")
   ),
   
+  theme = shinytheme("yeti"),
+  
   navbarPage("Realiza",
            
              navbarMenu("FNM",
-                       tabPanel("Sessoes",
+                       tabPanel("Sessoes Obligatorias",
                                 ui_sessoes("fnm_sessoes")
                                  
                         ),
-                        tabPanel("Resumo"
-                                
+                        tabPanel("Por Cidade",
+                                 ui_cidades("fnm_cidades")   
                         )
              )
   )
@@ -27,6 +30,7 @@ ui <- fluidPage(
 server <- function(input, output, session) {
   
   serverSessoes("fnm_sessoes", grupo = "fnm")
+  serverCidade("fnm_cidades", grupo = "fnm")
 }
 
 shinyApp(ui, server)
