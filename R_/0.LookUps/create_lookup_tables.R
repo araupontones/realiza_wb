@@ -19,9 +19,8 @@ actividades_zoho <- download_realiza("Actividades_Report")
 agentes <- fac_zoho %>% 
   filter(Roles == "Agente") %>%
   select(ID_agente = ID,
-         Agente = Facilitadora)
-
-
+         Agente = Facilitadora,
+         Cidade)
 
 
 export(agentes, file.path(exdir, "agentes.rds"))
@@ -32,7 +31,8 @@ export(agentes, file.path(exdir, "agentes.rds"))
 facilitadoras <- fac_zoho %>% 
   filter(Roles == "Facilitadora") %>%
   select(ID_facilitadora = ID,
-         Facilitadora = Facilitadora)
+         Facilitadora = Facilitadora,
+         Cidade)
 
 
 
@@ -57,6 +57,8 @@ grupos <- grupos_zoho %>%
   select(Grupo = grupo,
          ID_Grupo = ID)
 
+
+names(grupos_zoho)
 export(grupos, file.path(exdir, "grupos.rds"))
 
 

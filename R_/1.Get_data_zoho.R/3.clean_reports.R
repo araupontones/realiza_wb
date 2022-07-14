@@ -26,6 +26,7 @@ fnm_clean <- import(infile_fnm) %>%
 create_dates(Data) %>%
   #drop cases with emptu date, missing status, or missing name of emprendedora
   drop_empty() %>%
+  mutate(Status = scheduled_status(Status)) %>%
   presente_ausente() 
 
 
@@ -41,7 +42,7 @@ create_dates(Data) %>%
   presente_ausente() 
                 
 export(sgr_clean, exfile_sgr)
-exfile_sgr
+
 
 #remove temp objects
 rm(indir, infile_fnm, infile_sgr, exdir, exfile_fnm, exfile_sgr,

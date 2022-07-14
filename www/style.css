@@ -1,0 +1,48 @@
+
+/**Circles table*/
+/*
+body{
+  
+  
+  background-color: red;
+}
+*/
+
+/*==========================circles==============================*/
+
+.note{
+   font-style: italic;
+}
+
+.dot {
+  height: 10px;
+  margin-right: 1px;
+  width: 10px;
+  border-radius: 100%;
+  display: inline-block;
+}
+
+.green{
+
+  background-color: #3AA757;
+}
+
+.yellow{
+
+  background-color: #EFB700;
+}
+
+.red{
+  background-color: #EA4335;
+}
+
+.blue{
+  
+  background-color: #297DC5;
+  
+}
+
+.empty{
+  background-color: gray;
+  
+}

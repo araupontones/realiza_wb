@@ -18,8 +18,16 @@ create_dir_ <- function(check_dir){
 drop_empty <- function(.data){
   
   .data %>%
-    filter(Status != "", Emprendedora !="", !is.na(Data))
+    filter(Emprendedora !="", !is.na(Data))
   
+}
+
+
+#Update status of pending events ==============================================
+
+scheduled_status <- function(status_var){
+  
+  ifelse(status_var =="", "Agendado", status_var)
 }
 
 
@@ -57,18 +65,20 @@ presente_ausente <- function(.data) {
   
   .data %>%
     mutate(presente = ifelse(Status == "Presente", 1, 0),
-           ausente = ifelse(Status == "Ausente", 1, 0))
+           ausente = ifelse(Status == "Ausente", 1, 0),
+           agendado = ifelse(Status == "Agendado", 1, 0))
   
 }
 
 
 #' div for ausente presente ===================================================
 #' variable to create div of status
-div_status <- function(presente, ausente){
+div_status <- function(presente, ausente, agendado){
   
   
   case_when(presente == 1 ~ '<div class="dot green"></div>',
             ausente == 1 ~ '<div class="dot red"></div>',
+            agendado == 1 ~ '<div class="dot blue"></div>',
             is.na(ausente) ~ '<div class="dot empty"></div>',
             is.na(presente) ~ '<div class="dot empty"></div>'
             )

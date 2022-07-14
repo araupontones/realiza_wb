@@ -3,10 +3,15 @@
 #'Imports clean data
 #' takes the data creted in 2.append_reports
 #' Cleans and exports to dashboard
+#' Main actions: creates extra rows for activities that have not been scheduled yet
+#' These activities are taken from the sessoes_obligatorias (look up table)
+#' Output:
+#' Data set with the statistics by emprendedora and actividade
+#' Date set with divs for displayin in dash
 
 library(rio)
 library(dplyr)
-
+library(tidyr)
 #define input directories and files
 indir <- "data/1.zoho/3.clean"
 infile_fnm <- file.path(indir,"fnm.rds")
@@ -20,11 +25,12 @@ dir_lkps <- "data/0look_ups"
 #define exit directories  and files
 exdir <- "data/2.Dashboard"
 create_dir_(exdir)
-exfile_fnm <- file.path(exdir, "fnm.rds")
-exfile_sgr <- file.path(exdir, "sgr.rds")
+exfile_fnm_stats <- file.path(exdir, "fnm_stats.rds")
+exfile_fnm_div <- file.path(exdir, "fnm_div.rds")
 
 #read data =====================================================================
 actividades <- import(file.path(dir_lkps, "actividades.rds"))
+agentes <- import(file.path(dir_lkps, "agentes.rds"))
 fnm_clean <- import(infile_fnm)
 
 
@@ -87,10 +93,48 @@ emprendedoras <- lapply(split(fnm_clean, fnm_clean$Emprendedora), function(emp){
   
 })
 
-#append all emprendoras
+#append all emprendoras 
 emprendedoras_dashboard <- do.call(rbind, emprendedoras) %>%
-  mutate(div = div_status(presente, ausente),
-         Status = ifelse(is.na(Status), "Pendiente", Status))
+  mutate(div = div_status(presente, ausente, agendado),
+         #Pendente de agendar
+         Status = ifelse(is.na(Status), "Pendente", Status)) %>%
+  #droping because it is a SGR activiry
+  filter(actividade != "Sessões de coaching") %>%
+  arrange(Emprendedora,actividade, data_posix)
+
+
+#Statistics by emprendedora ====================================================
+#By emprendedora:
+#displays the number of sessoes by actividade
+
+fnm_stats <- emprendedoras_dashboard %>%
+  #short the names of the actividades for frienlier display
+  labels_actividades_fnm() %>%
+  #cretes total sessoes, mean presensas, 
+  count_asistencias() %>%
+  #fetch cidade from Agente
+  left_join(select(agentes, Agente, Cidade), by = "Agente") %>%
+  relocate(Cidade)
+
+
+#Data div =====================================================================
+#this table is used to display the dots and colors by actividade
+
+fnm_div <- fnm_stats %>%
+  select(-ends_with("total"), -presente_promedio) %>%
+  pivot_wider(id_cols = c(Cidade, Agente, Emprendedora),
+              names_from = actividade_label,
+              values_from = div)
+            
+
+
+
+
+
+#Export ========================================================================
+
+export(fnm_stats, exfile_fnm_stats)
+export(fnm_div, exfile_fnm_div)
 
 
 

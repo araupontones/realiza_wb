@@ -39,7 +39,6 @@ fnm_ind <-reportes_zoho$FNM_ind %>%
   rename(Data =  Data_do_registro)
 
 
-
 #3. Append
 fnm <- plyr::rbind.fill(fnm_group, fnm_ind) %>%
   select(Status, 
