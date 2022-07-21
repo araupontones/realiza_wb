@@ -12,7 +12,20 @@ fac_zoho <- download_realiza("Facilitadoras_Report")
 grupos_zoho <- download_realiza("Grupos_Report")
 turmas_zoho <- download_realiza("Turmas_fixas_report")
 actividades_zoho <- download_realiza("Actividades_Report")
+sessoes_fixas <- download_realiza("Sessoes_fixas_Report")
+emprendedoras_zoho <- download_realiza('Emprendedoras_Report')
 
+View(emprendedoras)
+
+#Look up emprendedoras ========================================================
+
+emprendedoras <- emprendedoras_zoho %>%
+  select(Emprendedora,
+        Grupos_fixos,
+        Cidade)
+
+
+export(emprendedoras, file.path(exdir, "emprendedoras.rds"))
 
 #Look Up agentes ===============================================================
 
@@ -81,3 +94,11 @@ actividades <- actividades_zoho %>%
 
 export(actividades, file.path(exdir, "actividades.rds"))
 
+#Sessoes fixas ==================================================================
+
+
+sessoes <- sessoes_fixas %>%
+  select(Modulo = sessao__ixa)
+
+
+export(sessoes, file.path(exdir, "sessoes.rds"))

@@ -1,5 +1,6 @@
 #' Clean names of variables to make tables consistent across
 #' Output: append FNM data and append SGR data
+cli::cli_alert_info("Appending group and individual sessions")
 library(rio)
 library(dplyr)
 gmdacr::load_functions("functions")
@@ -35,12 +36,14 @@ fnm_group <- reportes_zoho$FNM_grupal %>%
 
 #2. The table individual does not have activitidade, so we create it artificially
 fnm_ind <-reportes_zoho$FNM_ind %>% 
+  distinct() %>%
   mutate(Actividades = "Sessões individuais") %>%
   rename(Data =  Data_do_registro)
 
 
 #3. Append
 fnm <- plyr::rbind.fill(fnm_group, fnm_ind) %>%
+  distinct() %>%
   select(Status, 
          Nome_do_evento,
          Data,
@@ -58,18 +61,19 @@ export(fnm, exfile_fnm)
 
 #1. train
 sgr_train <- reportes_zoho$SGR_train %>%
+  distinct() %>%
   select(Status = Presenca, 
          Status_parceiro = Parceiro,
          Data = Presencas_fixas.Date_field,
          Modulo = Presencas_fixas.Modulo,
          Facilitadora = Presencas_fixas.Facilitadora,
-         Grupo = Presencas_fixas.Grupo_fixo,
          Emprendedora = Emprendedoras
          )
 
 
 #2. Individual
 sgr_ind <- reportes_zoho$SGR_ind %>%
+  distinct() %>%
   select(Status,
          Data= Data_do_registro,
          Emprendedora) %>%
@@ -80,9 +84,9 @@ sgr_ind <- reportes_zoho$SGR_ind %>%
 sgr <- plyr::rbind.fill(sgr_train, sgr_ind)
 
 
+
 #4 . Export
 export(sgr, exfile_sgr)
-
 
 
 rm(infile, exdir , exfile_sgr, exfile_fnm, 

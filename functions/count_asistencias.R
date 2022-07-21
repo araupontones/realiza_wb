@@ -2,9 +2,9 @@
 #'
 
 library(dplyr)
-count_asistencias <- function(.data, responsible = "Agente"){
+count_asistencias <- function(.data, responsible = "Agente", name_actividade = "actividade_label", ...){
   .data %>%
-  group_by_at(c(responsible ,"Emprendedora", "actividade_label"))  %>%
+  group_by_at(c(responsible ,"Emprendedora", name_actividade, ...))  %>%
     summarise(div = paste(div, collapse = ""),
               presente_promedio = mean(presente, na.rm = T),
               presente_total = sum(presente, na.rm = T),

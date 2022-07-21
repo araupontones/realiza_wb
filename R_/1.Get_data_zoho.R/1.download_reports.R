@@ -1,6 +1,6 @@
 #' Donwloads the reports from Zoho
 #' Exports them into data/1.zoho
-
+cli::cli_alert_info("Downloading reports")
 #load dependencies
 library(rio)
 gmdacr::load_functions("functions")
@@ -35,7 +35,6 @@ fetch_this <- c(
 
 reportes <- purrr::map(fetch_this, download_realiza)
 names(reportes) <- names(fetch_this)
-
 
 
 #Export ========================================================================
