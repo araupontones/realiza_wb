@@ -1,18 +1,21 @@
-# all flow!
+zoho_scripts <- list.files("R_/1.Get_data_zoho", full.names = T)
+for_dashboard <- list.files("R_/2.create_data_dashboard", full.names = T)
+dir_lkps <- "data/0look_ups"
 
-#1. download data -------------------------------------------------------------
+#Downlaod data from zoho
+#Append groups and individual sessions
+#Clean data
+zoho_data <- lapply(zoho_scripts, function(x){
+  
+  
+  source(x, encoding = "UTF-8")
+  
+})
 
-source("R_/download_from_zoho.R", encoding = "UTF-8")
 
-#2. clean data -----------------------------------------------------------------
+dashboard_data <- lapply(for_dashboard, function(x){
+  
+  source(x, encoding = "UTF-8")
+})
 
-#presenca
-source("R_/clean_raw_presencas.R", encoding = "UTF-8")
 
-#turmas
-source("R_/clean_raw_turmas.R", encoding = "UTF-8")
-
-#3. create indicators for dashboard --------------------------------------------
-
-source("R_/create_indicators.R", encoding = "UTF-8")
-source("R_/create_table_resumo.R", encoding = "UTF-8")
