@@ -44,6 +44,7 @@ ui <- fluidPage(
 
                         ),
                         tabPanel("Por Cidade",
+                                 ui_cidades("sgr_fnm_cidades")  
 
                         )
              ),
@@ -68,7 +69,7 @@ server <- function(input, output, session) {
     id_cidades <- paste0(x,"_cidades")
     
     serverSessoes(id_sessoes, grupo = x)
-    #serverCidade(id_cidades, grupo = x)
+    serverCidade(id_cidades, grupo = x)
   })
   
   

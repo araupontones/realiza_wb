@@ -35,9 +35,22 @@ ui_cidades <- function(id){
 serverCidade <- function(id, grupo) {
   moduleServer(id, function(input, output, session) {
     
-    
-    infile_stats <- glue::glue("data/2.Dashboard/{grupo}_stats.rds") 
-    data_stats <- rio::import(infile_stats) %>% dplyr::filter(grupo_accronym == define_accronym(grupo))
+    if(grupo %in% c("sgr", "fnm")){
+      
+      infile_stats <- glue::glue("data/2.Dashboard/{grupo}_stats.rds") 
+      data_stats <- rio::import(infile_stats) %>% dplyr::filter(grupo_accronym == define_accronym(grupo))
+      
+    } else {
+      
+      infile_stats_sgr <- glue::glue("data/2.Dashboard/sgr_stats.rds") 
+      infile_stats_fnm <- glue::glue("data/2.Dashboard/fnm_stats.rds") 
+      
+      data_stats_fnm <- rio::import(infile_stats_fnm) %>% dplyr::filter(grupo_accronym == define_accronym(grupo))
+      data_stats_sgr <- rio::import(infile_stats_sgr) %>% dplyr::filter(grupo_accronym == define_accronym(grupo))
+      
+      data_stats <- plyr::rbind.fill(data_stats_sgr, data_stats_fnm)
+    }
+   
     
     #Reactive elements ========================================================
     
