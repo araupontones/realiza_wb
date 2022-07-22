@@ -1,6 +1,7 @@
 #' Clean names of variables to make tables consistent across
 #' Output: append FNM data and append SGR data
 cli::cli_alert_info("Appending group and individual sessions")
+
 library(rio)
 library(dplyr)
 gmdacr::load_functions("functions")
@@ -87,7 +88,6 @@ sgr <- plyr::rbind.fill(sgr_train, sgr_ind)
 
 #4 . Export
 export(sgr, exfile_sgr)
-
 
 rm(infile, exdir , exfile_sgr, exfile_fnm, 
    fnm_group, fnm_ind,

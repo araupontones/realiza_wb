@@ -2,6 +2,7 @@
 #' takes the data creted in 2.append_reports
 #' Cleans and exports to dashboard
 cli::cli_alert_info("Cleaning data")
+
 library(rio)
 library(dplyr)
 
@@ -22,7 +23,9 @@ grupos <- c("fnm", "sgr")
 infiles <- setNames(c(infile_fnm, infile_sgr), grupos)
 
 
-emprendedoras_lkp <- import(file.path(dir_lkps, "emprendedoras.rds"))
+# emprendedoras_lkp <- import(file.path(dir_lkps, "emprendedoras.rds"))
+# %>%
+#   left_join(emprendedoras_lkp, by = "Emprendedora")
 
 #Clean data =====================================================================
 
@@ -42,8 +45,7 @@ clean_them <- lapply(grupos, function(x){
     #Create new columns to identify the status of the presneca:
       #presente, ausente, pendente, agendado
       # each of this takes a value of 1 or 0
-    presente_ausente() %>%
-    left_join(emprendedoras_lkp, by = "Emprendedora")
+    presente_ausente()
   
   }
   
@@ -56,7 +58,6 @@ names(clean_them) <- grupos
 #export ========================================================================
 export(clean_them$fnm, exfile_fnm)
 export(clean_them$sgr, exfile_sgr)
-
 
 #remove temp objects
 rm(indir, infile_fnm, infile_sgr, exdir, exfile_fnm, exfile_sgr)

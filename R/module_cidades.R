@@ -36,8 +36,8 @@ serverCidade <- function(id, grupo) {
   moduleServer(id, function(input, output, session) {
     
     
-    infile_stats <- glue::glue("data/2.Dashboard/{grupo}_stats.rds")
-    data_stats <- rio::import(infile_stats)
+    infile_stats <- glue::glue("data/2.Dashboard/{grupo}_stats.rds") 
+    data_stats <- rio::import(infile_stats) %>% dplyr::filter(grupo_accronym == define_accronym(grupo))
     
     #Reactive elements ========================================================
     

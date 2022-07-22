@@ -15,14 +15,19 @@ actividades_zoho <- download_realiza("Actividades_Report")
 sessoes_fixas <- download_realiza("Sessoes_fixas_Report")
 emprendedoras_zoho <- download_realiza('Emprendedoras_Report')
 
-View(emprendedoras)
+
 
 #Look up emprendedoras ========================================================
 
 emprendedoras <- emprendedoras_zoho %>%
   select(Emprendedora,
         Grupos_fixos,
-        Cidade)
+        Cidade,
+        Agente = Facilitadoras,
+        Grupo = Grupos) %>%
+    distinct() %>%
+  left_join(select(grupos_zoho, Grupo = grupo, grupo_accronym), by = "Grupo")
+
 
 
 export(emprendedoras, file.path(exdir, "emprendedoras.rds"))

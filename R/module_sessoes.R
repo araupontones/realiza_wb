@@ -1,6 +1,10 @@
 #Module sessoes
 library(dplyr)
-ui_sessoes <- function(id){
+ui_sessoes <- function(id, grupo){
+  
+  #Define the title of the main selector (agente for fnm, Turma for sgr)
+  
+  title_selector <- define_selector(grupo)
   
   tagList(
     
@@ -13,7 +17,7 @@ ui_sessoes <- function(id){
                    ),
                    
                    #Inputs Agente
-                   selectInput(NS(id,"agentes"), "Agente",
+                   selectInput(NS(id,"agentes"), title_selector,
                                c("")
                    )
       ),
@@ -34,15 +38,44 @@ ui_sessoes <- function(id){
 
 
 #Server ======================================================================
-serverSessoes <- function(id, grupo) {
+serverSessoes <- function(id, grupo, tipo_sessao = "modulos") {
   moduleServer(id, function(input, output, session) {
     
-    #read data of the group
-    infile_sessoes <- glue::glue("data/2.Dashboard/{grupo}_div.rds")
-    data_sessoes <- rio::import(infile_sessoes)
     
-    infile_stats <- glue::glue("data/2.Dashboard/{grupo}_stats.rds")
-    data_stats <- rio::import(infile_stats)
+    if(grupo %in% c("sgr", "fnm")){
+      
+      #read data of the group
+      infile_sessoes <- glue::glue("data/2.Dashboard/{grupo}_div.rds")
+      data_sessoes <- rio::import(infile_sessoes) %>% dplyr::filter(grupo_accronym == define_accronym(grupo))
+      
+      
+      infile_stats <- glue::glue("data/2.Dashboard/{grupo}_stats.rds")
+      data_stats <- rio::import(infile_stats) %>% dplyr::filter(grupo_accronym == define_accronym(grupo))
+      
+    } else if(tipo_sessao == "modulos"){
+      
+      #read data of the group
+      infile_sessoes <- glue::glue("data/2.Dashboard/sgr_div.rds")
+      data_sessoes <- rio::import(infile_sessoes) %>% dplyr::filter(grupo_accronym == define_accronym(grupo))
+      
+      
+      infile_stats <- glue::glue("data/2.Dashboard/sgr_stats.rds")
+      data_stats <- rio::import(infile_stats) %>% dplyr::filter(grupo_accronym == define_accronym(grupo))
+      
+    } else {
+      
+      #read data of the group
+      infile_sessoes <- glue::glue("data/2.Dashboard/fnm_div.rds")
+      data_sessoes <- rio::import(infile_sessoes) %>% dplyr::filter(grupo_accronym == define_accronym(grupo))
+      
+      
+      infile_stats <- glue::glue("data/2.Dashboard/fnm_stats.rds")
+      data_stats <- rio::import(infile_stats) %>% dplyr::filter(grupo_accronym == define_accronym(grupo))
+      
+    }
+    
+    
+    
     
     #Reactive elements ========================================================
     
@@ -105,13 +138,8 @@ serverSessoes <- function(id, grupo) {
              "O número de bolinhas representa o número de sessões obrigatórias por tipo de evento."
       ),
         tags$div(
-          tags$p(
-            tags$div(class = "dot green"), "Presente",
-            tags$div(class = "dot red"), "Ausente",
-            tags$div(class = "dot blue"), "Agendado",
-            tags$div(class = "dot empty"), "Sem Agenda"
-            
-          )
+          #created in R/define_parameters_grupos.R
+          define_legend(grupo)
         ),
      
       )

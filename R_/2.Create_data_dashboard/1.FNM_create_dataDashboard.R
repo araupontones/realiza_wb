@@ -1,5 +1,6 @@
 #data for dashboard
-
+cli::cli_alert_info("Creating data for dashboard fnm")
+Sys.setlocale("LC_ALL","Portuguese")
 #'Imports clean data
 #' takes the data creted in 2.append_reports
 #' Cleans and exports to dashboard
@@ -15,7 +16,7 @@ library(tidyr)
 #define input directories and files
 indir <- "data/1.zoho/3.clean"
 infile_fnm <- file.path(indir,"fnm.rds")
-infile_sgr <- file.path(indir,"sgr.rds")
+# infile_sgr <- file.path(indir,"sgr.rds")
 
 #directory of lookuptables
 dir_lkps <- "data/0look_ups"
@@ -30,10 +31,9 @@ exfile_fnm_div <- file.path(exdir, "fnm_div.rds")
 
 #read data =====================================================================
 actividades <- import(file.path(dir_lkps, "actividades.rds"))
-agentes <- import(file.path(dir_lkps, "agentes.rds"))
+emprendedoras_lkp <- import(file.path(dir_lkps, "emprendedoras.rds"))
+# agentes <- import(file.path(dir_lkps, "agentes.rds"))
 fnm_clean <- import(infile_fnm)
-
-
 
 
 
@@ -48,19 +48,21 @@ emprendedoras <- lapply(split(fnm_clean, fnm_clean$Emprendedora), function(emp){
   #Thus, join with lookup tables actividades to artificially create that
   emp_with_activities <- emp %>%
     full_join(select(actividades, actividade), by = "actividade") %>%
-    mutate(Emprendedora = Emprendedora[1],
-           Agente = Agente[1])
+    mutate(Emprendedora = Emprendedora[1]
+           #Agente = Agente[1]
+           )
   
 
   activities <- lapply(split(emp_with_activities, emp_with_activities$actividade), function(act){
     
     emprendedora <- act$Emprendedora[1]
     activity <- act$actividade[1]
-    agente <- act$Agente[1]
+    #agente <- act$Agente[1]
     
+    #print(activity)
     mandatory <- as.numeric(actividades$sessoes[actividades$actividade == activity])
     #print(activity)
-    message(emprendedora)
+    #message(emprendedora)
     #print(nrow(act))
     todo <- mandatory - nrow(act)
    
@@ -71,8 +73,8 @@ emprendedoras <- lapply(split(fnm_clean, fnm_clean$Emprendedora), function(emp){
     #create artificial
     sessions_todo <- tibble(
       Emprendedora = rep(emprendedora, todo),
-      actividade = rep(activity, todo),
-      Agente = rep(agente, todo)
+      actividade = rep(activity, todo)
+      #Agente = rep(agente, todo)
     )
     
     
@@ -95,11 +97,12 @@ emprendedoras <- lapply(split(fnm_clean, fnm_clean$Emprendedora), function(emp){
 
 #append all emprendoras 
 emprendedoras_dashboard <- do.call(rbind, emprendedoras) %>%
-  mutate(div = div_status(presente, ausente, agendado),
-         #Pendente de agendar
-         Status = ifelse(is.na(Status), "Pendente", Status)) %>%
+  mutate(#Pendente de agendar
+         Status = ifelse(is.na(Status), "Pendente", Status),
+         #Create div
+         div = div_status(presente, ausente, agendado, pendente),) %>%
   #droping because it is a SGR activiry
-  filter(actividade != "Sessões de coaching") %>%
+  dplyr::filter(actividade != "Sessões de coaching") %>%
   arrange(Emprendedora,actividade, data_posix)
 
 
@@ -113,8 +116,11 @@ fnm_stats <- emprendedoras_dashboard %>%
   #cretes total sessoes, mean presensas, 
   count_asistencias() %>%
   #fetch cidade from Agente
-  left_join(select(agentes, Agente, Cidade), by = "Agente") %>%
-  relocate(Cidade)
+  left_join(emprendedoras_lkp, by = "Emprendedora") %>%
+  relocate(Cidade, grupo_accronym, Agente, Emprendedora)
+
+
+
 
 
 #Data div =====================================================================
@@ -122,7 +128,7 @@ fnm_stats <- emprendedoras_dashboard %>%
 
 fnm_div <- fnm_stats %>%
   select(-ends_with("total"), -presente_promedio) %>%
-  pivot_wider(id_cols = c(Cidade, Agente, Emprendedora),
+  pivot_wider(id_cols = c(Cidade, grupo_accronym, Agente, Emprendedora),
               names_from = actividade_label,
               values_from = div)
             

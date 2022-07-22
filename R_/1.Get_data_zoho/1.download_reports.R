@@ -1,6 +1,7 @@
 #' Donwloads the reports from Zoho
 #' Exports them into data/1.zoho
 cli::cli_alert_info("Downloading reports")
+
 #load dependencies
 library(rio)
 gmdacr::load_functions("functions")

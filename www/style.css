@@ -29,7 +29,8 @@ body{
 
 .yellow{
 
-  background-color: #EFB700;
+  font-weight: bold;
+  color: black;
 }
 
 .red{
