@@ -2,8 +2,6 @@
 
 create_random_check <- function(){
   
-  #read look up table emprendoras
-  emprendedoras <- rio::import("data/0look_ups/emprendedoras.rds")
   
   #read all presencas (created in R_/1.Get_data_zoho/3.clean_reports.R)
   #and keep the latest record for an emprendedora marked as presente
@@ -12,8 +10,7 @@ create_random_check <- function(){
     arrange(Emprendedora, Data) %>%
     group_by(Emprendedora) %>%
     dplyr::filter(row_number() == n()) %>%
-    ungroup() %>%
-    left_join(emprendedoras,by = "Emprendedora")
+    ungroup() 
   
   
   #select one Check per city

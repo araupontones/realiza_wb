@@ -20,20 +20,15 @@ ui <- fluidPage(
              
             panels_SGR_FNM("FNM + SGR"),
              
-             tabPanel("Feedback",
-                      tags$iframe(src= "https://app.powerbi.com/view?r=eyJrIjoiZWE2ZjA0NWItYWE0NS00M2M4LThjNWUtMzFmOTMzMWM0NDMwIiwidCI6IjFmMTU1ZTFlLWQyZGYtNDYzYi04NDZjLWM4NzJiZWU0Yjg0NCJ9&pageName=ReportSection19c755afbc835e848d83",
-                                  width = "100%",
-                                  height= "600px",
-                                  frameborder="0",
-                                  allowfullscreen="true"
-                                  
-                                  )
-                      
-                      ),
+            panel_powerBI("Feedback"),
              
-             
+            tabPanel("Resumo",
+                     ui_summary("summary")), 
+            
              tabPanel("Admin",
                       ui_admin("admin"))
+            
+            
   )
 )
 
@@ -43,7 +38,9 @@ ui <- fluidPage(
 server <- function(input, output, session) {
   
 
+
   
+#Server grupos  ================================================================
 #Activate the servers of each gropu when the tab is selected
 #For this to work the name id of the uis and values of panel should be consisten
 #See consistency in panels_FNM.R | Panels_SGR.R | Panels_SGR_FNM.R
@@ -53,6 +50,11 @@ activate_tabs_grupos(grupos = c("fnm", "sgr", "sgr_fnm"),
                      session
                      )
 
+  
+#server summary ================================================================
+  
+serverSummary("summary")
+  
   
   
   #Password admin ===============================================================

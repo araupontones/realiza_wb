@@ -20,6 +20,8 @@ exfile_fnm <- file.path(exdir, "fnm.rds")
 exfile_sgr <- file.path(exdir, "sgr.rds")
 exfile_all <- file.path(exdir, "all_presencas.rds")
 
+emprendedoras <- rio::import("data/0look_ups/emprendedoras.rds")
+
 grupos <- c("fnm", "sgr")
 infiles <- setNames(c(infile_fnm, infile_sgr), grupos)
 
@@ -69,14 +71,21 @@ all_presencas <- select(clean_them$fnm,
                         Status,
                         Emprendedora,
                         Data,
-                        actividade
+                        actividade,
+                        data_posix
                         ) %>%
   rbind(select(clean_them$sgr,
                Status,
                Emprendedora,
                Data,
-               actividade = Modulo
-               ))
+               actividade = Modulo,
+               data_posix
+               )) %>%
+  left_join(emprendedoras, by = "Emprendedora") %>%
+  dplyr::filter(!Status %in% c("Agendado", "Pendente")) %>%
+  mutate(presente = Status == "Presente",
+         week = lubridate::week(data_posix)) 
+
 
 
 export(all_presencas, exfile_all)
