@@ -18,6 +18,7 @@ exdir <- "data/1.zoho/3.clean"
 create_dir_(exdir)
 exfile_fnm <- file.path(exdir, "fnm.rds")
 exfile_sgr <- file.path(exdir, "sgr.rds")
+exfile_all <- file.path(exdir, "all_presencas.rds")
 
 grupos <- c("fnm", "sgr")
 infiles <- setNames(c(infile_fnm, infile_sgr), grupos)
@@ -59,8 +60,29 @@ names(clean_them) <- grupos
 export(clean_them$fnm, exfile_fnm)
 export(clean_them$sgr, exfile_sgr)
 
+
+
+names(clean_them$fnm)
+#append both into a single file ================================================
+
+all_presencas <- select(clean_them$fnm, 
+                        Status,
+                        Emprendedora,
+                        Data,
+                        actividade
+                        ) %>%
+  rbind(select(clean_them$sgr,
+               Status,
+               Emprendedora,
+               Data,
+               actividade = Modulo
+               ))
+
+
+export(all_presencas, exfile_all)
+
 #remove temp objects
-rm(indir, infile_fnm, infile_sgr, exdir, exfile_fnm, exfile_sgr)
+rm(indir, infile_fnm, infile_sgr, exdir, exfile_fnm, exfile_sgr, all_presencas)
 
 
 # 

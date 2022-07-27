@@ -86,8 +86,13 @@ sgr <- plyr::rbind.fill(sgr_train, sgr_ind)
 
 
 
-#4 . Export
+#4 . Export ===================================================================
 export(sgr, exfile_sgr)
+
+
+
+
+
 
 rm(infile, exdir , exfile_sgr, exfile_fnm, 
    fnm_group, fnm_ind,

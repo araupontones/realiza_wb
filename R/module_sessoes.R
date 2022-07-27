@@ -41,7 +41,7 @@ ui_sessoes <- function(id, grupo){
 serverSessoes <- function(id, grupo, tipo_sessao = "modulos") {
   moduleServer(id, function(input, output, session) {
     
-    
+    message(id)
     if(grupo %in% c("sgr", "fnm")){
       
       #read data of the group
@@ -74,6 +74,23 @@ serverSessoes <- function(id, grupo, tipo_sessao = "modulos") {
       
     }
     
+    
+    header <- reactive({
+      
+      if(grepl("modulo", id)) {
+        
+        tipo <- "Modulos"
+        sexo <- "os"
+      } else {
+        
+        tipo <- "Sessoes"
+        sexo <- "as"
+      }
+      
+      
+     glue::glue('{tipo} Obligatori{sexo} - {input$cidades}')
+      
+    })
     
     
     
@@ -132,8 +149,8 @@ serverSessoes <- function(id, grupo, tipo_sessao = "modulos") {
       avg <- stats_agentes()$presencas_avg[stats_agentes()$Agente == input$agentes]
       
       tags$div(
-      h1(paste0(input$cidades, ": ", input$agentes)),
-      h2(paste0("Média de presenças: ", avg)),
+      h1(header()),
+      h3(paste0(input$agentes), tags$span(class = "media-presencas", "- Média de presenças: ", avg)),
       tags$p(class = "note",
              "O número de bolinhas representa o número de sessões obrigatórias por tipo de evento."
       ),

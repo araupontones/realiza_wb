@@ -1,7 +1,7 @@
 #Module sessoes
 library(dplyr)
 library(ggplot2)
-library(shinymanager)
+library(shinycssloaders)
 
 #Check password ===============================================================
 data_login <- tibble(
@@ -61,7 +61,16 @@ ui_admin <- function(id){
      
    
      actionButton(NS(id,"btn_atualizar"), "Atualizar data"),
-     textOutput(NS(id,"text"))
+     actionButton(NS(id, "btn_check"), "Criar checks aleatórios"),
+     textOutput(NS(id,"text")),
+     
+     #Checks --------------------------------------------------------------
+     #table checks
+     shinycssloaders::withSpinner(DT::dataTableOutput(NS(id,"table_check")), color = "red"),
+     #buton download checks
+     br(),
+     uiOutput(NS(id,"ui_dwld_checks"))
+     
      
  )
   
@@ -75,10 +84,60 @@ serverAdmin <- function(id) {
     
     
     
-   
+  #create random check  -----------------------------------------
   
+    data_checks <- eventReactive(input$btn_check,{
+      
+      #function saved in R
+      #it reads the clean presencas and selects a record by city
+      #this record is the latest present record of an emprendora
+      create_random_check()
+      
+    })
     
     
+    #display checks to user
+    output$table_check <- DT::renderDataTable({
+      
+      data_checks()
+    })
+    
+    #download random checks -----------------------------------------------
+    output$ui_dwld_checks <- renderUI({
+      
+      req(data_checks())
+      
+      downloadButton(NS(id,"downloadChecks"), "Baixar tabela de verificação")
+      
+      
+    })
+    
+    
+    output$downloadChecks <- downloadHandler(
+      
+      
+      
+      filename = function() {
+        paste("verificacao_realiza_",Sys.Date(),".csv", sep = "")
+      },
+      content = function(file) {
+        write.csv(data_checks(), file, row.names = FALSE)
+      }
+    )
+    
+    
+    # observe(data_checks(),{
+    #   
+    #   downloadHandler(
+    #     filename = function() {
+    #       paste("j", ".csv", sep = "")
+    #     },
+    #     content = function(file) {
+    #       write.csv(data_checks(), file, row.names = FALSE)
+    #     }
+    #   )
+    #   
+    # })
     
     
     #update the data ==========================================================
