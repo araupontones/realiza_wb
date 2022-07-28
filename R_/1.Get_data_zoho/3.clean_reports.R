@@ -26,9 +26,6 @@ grupos <- c("fnm", "sgr")
 infiles <- setNames(c(infile_fnm, infile_sgr), grupos)
 
 
-# emprendedoras_lkp <- import(file.path(dir_lkps, "emprendedoras.rds"))
-# %>%
-#   left_join(emprendedoras_lkp, by = "Emprendedora")
 
 #Clean data =====================================================================
 
@@ -40,11 +37,15 @@ clean_them <- lapply(grupos, function(x){
     #clean dates (get rid of time, to be in portuguese, and create data_posix for vis)
     create_dates(Data) %>%
     #drop cases with empty date, or missing name of emprendedora
-    drop_empty() %>%
+    drop_empty()  %>%
+    complete_emprendedoras(x,emprendedoras) %>%
+   
     #Update status variable
     #Pendente : data evento <= today and status is missing
     #Agendado: data evento > today
+    
     scheduled_status()  %>%
+    
     #Create new columns to identify the status of the presneca:
       #presente, ausente, pendente, agendado
       # each of this takes a value of 1 or 0
@@ -56,7 +57,11 @@ clean_them <- lapply(grupos, function(x){
   
 )
 
+
+
+
 names(clean_them) <- grupos
+
 
 #export ========================================================================
 export(clean_them$fnm, exfile_fnm)
@@ -64,7 +69,7 @@ export(clean_them$sgr, exfile_sgr)
 
 
 
-names(clean_them$fnm)
+
 #append both into a single file ================================================
 
 all_presencas <- select(clean_them$fnm, 

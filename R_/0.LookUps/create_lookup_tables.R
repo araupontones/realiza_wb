@@ -24,7 +24,8 @@ emprendedoras <- emprendedoras_zoho %>%
         Grupos_fixos,
         Cidade,
         Agente = Facilitadoras,
-        Grupo = Grupos) %>%
+        Grupo = Grupos,
+        status_realiza)%>%
     distinct() %>%
   left_join(select(grupos_zoho, Grupo = grupo, grupo_accronym), by = "Grupo")
 

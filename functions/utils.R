@@ -23,6 +23,33 @@ drop_empty <- function(.data){
 }
 
 
+#complete list of emprendedoras ===============================================
+
+complete_emprendedoras <- function(.data, grupo, db_emprendedoras){
+  
+  db <- .data %>%
+    full_join(select(db_emprendedoras, 
+                     Emprendedora,
+                     status_realiza), by = "Emprendedora")
+  
+  if(grupo == "fnm") {
+    
+    db <- db %>% mutate(actividades = ifelse(is.na(actividade), "Sessão Inaugural", actividade))
+  }
+  
+  
+  
+  if(grupo == "sgr") {
+    
+    db <- db %>% mutate(Modulo = ifelse(is.na(Modulo), "1.1", Modulo))
+  }
+  
+  
+  db
+  
+  
+}
+
 #Update status of pending events ==============================================
 
 scheduled_status <- function(.data){

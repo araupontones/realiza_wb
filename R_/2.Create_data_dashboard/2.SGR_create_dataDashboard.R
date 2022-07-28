@@ -104,6 +104,7 @@ emprendedoras_dashboard <- do.call(plyr::rbind.fill,emprendedoras)%>%
          )%>%
   relocate(Emprendedora,actividade_label,Modulo, data_posix, Status, div) 
 
+
 #artifically create rows of parceiros ==========================================
 
 divs_parceiros <-  emprendedoras_dashboard %>%

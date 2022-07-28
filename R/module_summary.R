@@ -84,9 +84,28 @@ serverSummary<- function(id) {
         data_plot() %>%
           ggplot(
             aes(x = target,
-                y = mean_presenca)
+                y = mean_presenca,
+                label = paste0(round(mean_presenca * 100,0), "%")
+                )
           ) +
-          geom_point()
+          geom_point(size = 6,
+                     color = "#EF6F31") +
+          labs(y = "Presenças (%)",
+               x = " " 
+               ) +
+          geom_text(hjust = -.5)+
+          scale_y_continuous(labels = function(x)x*100) +
+          theme(axis.ticks = element_blank(),
+                axis.title = element_text(size = 20),
+                axis.title.y = element_text(margin = margin(r = 10)),
+                axis.text = element_text(size = 16),
+                
+                plot.background = element_blank(),
+                panel.background = element_blank(),
+                panel.grid.minor.y =  element_line(linetype = "dotted", color = "gray"),
+                panel.grid.major.y =  element_line(linetype = "dotted", color = "gray")
+                
+                )
       }
       
       
