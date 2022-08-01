@@ -66,7 +66,6 @@ clean_them <- lapply(grupos, function(x){
 
 names(clean_them) <- grupos
 
-View(clean_them$fnm)
 
 
 #export ========================================================================
