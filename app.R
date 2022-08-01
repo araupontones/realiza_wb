@@ -22,8 +22,18 @@ ui <- fluidPage(
              
             panel_powerBI("Feedback"),
              
-            tabPanel("Resumo",
-                     ui_summary("summary")), 
+            navbarMenu("Resumo",
+                       tabPanel("Overview",
+                                ui_overview("overview")
+                                ),
+                       tabPanel("Presencas",
+                                ui_summary("summary")
+                                
+                                )
+                       
+            ),
+                       
+                 
             
              tabPanel("Admin",
                       ui_admin("admin"))
@@ -52,7 +62,7 @@ activate_tabs_grupos(grupos = c("fnm", "sgr", "sgr_fnm"),
 
   
 #server summary ================================================================
-  
+  serverOverview("overview") 
 serverSummary("summary")
   
   

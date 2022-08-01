@@ -20,7 +20,8 @@ emprendedoras_zoho <- download_realiza('Emprendedoras_Report')
 #Look up emprendedoras ========================================================
 
 emprendedoras <- emprendedoras_zoho %>%
-  select(Emprendedora,
+  select(ID_BM,
+        Emprendedora,
         Grupos_fixos,
         Cidade,
         Agente = Facilitadoras,
@@ -33,10 +34,13 @@ emprendedoras <- emprendedoras_zoho %>%
 
 export(emprendedoras, file.path(exdir, "emprendedoras.rds"))
 
+
+
 #Look Up agentes ===============================================================
 
+
 agentes <- fac_zoho %>% 
-  filter(Roles == "Agente") %>%
+  dplyr::filter(Roles == "Agente") %>%
   select(ID_agente = ID,
          Agente = Facilitadora,
          Cidade)
@@ -48,7 +52,7 @@ export(agentes, file.path(exdir, "agentes.rds"))
 
 # Look Up facilitadoras =======================================================
 facilitadoras <- fac_zoho %>% 
-  filter(Roles == "Facilitadora") %>%
+  dplyr::filter(Roles == "Facilitadora") %>%
   select(ID_facilitadora = ID,
          Facilitadora = Facilitadora,
          Cidade)
@@ -89,7 +93,6 @@ turmas <- turmas_zoho %>%
 export(turmas, file.path(exdir, "turmas.rds"))
 
 #Actividades =================================================================
-View(actividades_zoho)
 
 actividades <- actividades_zoho %>%
   select(actividade,

@@ -22,6 +22,7 @@ exfile_all <- file.path(exdir, "all_presencas.rds")
 
 emprendedoras <- rio::import("data/0look_ups/emprendedoras.rds")
 
+
 grupos <- c("fnm", "sgr")
 infiles <- setNames(c(infile_fnm, infile_sgr), grupos)
 
@@ -38,7 +39,10 @@ clean_them <- lapply(grupos, function(x){
     create_dates(Data) %>%
     #drop cases with empty date, or missing name of emprendedora
     drop_empty()  %>%
-    complete_emprendedoras(x,emprendedoras) %>%
+    #there are some emprendedoras that are in the system but that have not
+    #been reported yet
+    # thus, create a status of NA for them so we can flag it in the system
+    #complete_emprendedoras(x,emprendedoras) %>%
    
     #Update status variable
     #Pendente : data evento <= today and status is missing
@@ -62,6 +66,8 @@ clean_them <- lapply(grupos, function(x){
 
 names(clean_them) <- grupos
 
+View(clean_them$fnm)
+
 
 #export ========================================================================
 export(clean_them$fnm, exfile_fnm)
@@ -84,10 +90,11 @@ all_presencas <- select(clean_them$fnm,
                Emprendedora,
                Data,
                actividade = Modulo,
-               data_posix
+               data_posix,
                )) %>%
   left_join(emprendedoras, by = "Emprendedora") %>%
-  dplyr::filter(!Status %in% c("Agendado", "Pendente")) %>%
+  #Only keep status that has been marked either as presente or ausente
+  dplyr::filter(!Status %in% c("Agendado")) %>%
   mutate(presente = Status == "Presente",
          week = lubridate::week(data_posix)) 
 

@@ -23,15 +23,19 @@ drop_empty <- function(.data){
 }
 
 
-#complete list of emprendedoras ===============================================
+#'complete list of emprendedoras ===============================================
+#' To have the list of all the emprendedoras in the system
 
 complete_emprendedoras <- function(.data, grupo, db_emprendedoras){
   
+  #get all the list of emprendedoras
   db <- .data %>%
     full_join(select(db_emprendedoras, 
+                     ID_BM,
                      Emprendedora,
-                     status_realiza), by = "Emprendedora")
+                     ), by = "Emprendedora")
   
+  #artificially create a first session for those that have not been reported yet
   if(grupo == "fnm") {
     
     db <- db %>% mutate(actividades = ifelse(is.na(actividade), "Sessão Inaugural", actividade))
@@ -45,8 +49,7 @@ complete_emprendedoras <- function(.data, grupo, db_emprendedoras){
   }
   
   
-  db
-  
+  db 
   
 }
 
