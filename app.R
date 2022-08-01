@@ -14,44 +14,31 @@ ui <- fluidPage(
   navbarPage("Realiza",
              id = "Paneles",
              
-             navbarMenu("FNM",
-                        tabPanel("Sessoes Obligatorias",
-                                 ui_sessoes("fnm_sessoes", grupo = "fnm")
-                                 
-                        ),
-                        tabPanel("Por Cidade",
-                                 ui_cidades("fnm_cidades")   
-                        )
-             ),
-             navbarMenu("SGR",
-                        tabPanel("Modulos Obligatorios",
-                                 ui_sessoes("sgr_sessoes", grupo = "sgr")
-                                 
-                        ),
-                        tabPanel("Por Cidade",
-                                 ui_cidades("sgr_cidades")   
-                        )
-             ),
+            panels_FNM("FNM"),
              
-             navbarMenu("FNM + SGR",
-                        tabPanel("Sessoes Obligatorias",
-                                 ui_sessoes("sgr_fnm_modulos", grupo = "fnm_sgr")
-
-                        ),
-                        tabPanel("Modulos Obligatorios",
-                                 ui_sessoes("sgr_fnm_sessoes", grupo = "fnm_sgr")
-
-
-                        ),
-                        tabPanel("Por Cidade",
-                                 ui_cidades("sgr_fnm_cidades")  
-
-                        )
-             ),
+            panels_SGR("SGR"),
              
+            panels_SGR_FNM("FNM + SGR"),
              
+            panel_powerBI("Feedback"),
+             
+            navbarMenu("Resumo",
+                       tabPanel("Overview",
+                                ui_overview("overview")
+                                ),
+                       tabPanel("Presencas",
+                                ui_summary("summary")
+                                
+                                )
+                       
+            ),
+                       
+                 
+            
              tabPanel("Admin",
                       ui_admin("admin"))
+            
+            
   )
 )
 
@@ -60,27 +47,25 @@ ui <- fluidPage(
 
 server <- function(input, output, session) {
   
+
+
   
-  grupos <- c("fnm", "sgr", "sgr_fnm")
+#Server grupos  ================================================================
+#Activate the servers of each gropu when the tab is selected
+#For this to work the name id of the uis and values of panel should be consisten
+#See consistency in panels_FNM.R | Panels_SGR.R | Panels_SGR_FNM.R
+activate_tabs_grupos(grupos = c("fnm", "sgr", "sgr_fnm"), 
+                     tipos = c("sessoes", "modulos", "cidades"),
+                     input,
+                     session
+                     )
+
   
-  lapply(grupos, function(x){
-    
-    id_sessoes <- paste0(x,"_sessoes")
-    id_cidades <- paste0(x,"_cidades")
-    
-    serverSessoes(id_sessoes, grupo = x)
-    serverCidade(id_cidades, grupo = x)
-  })
+#server summary ================================================================
+  serverOverview("overview") 
+serverSummary("summary")
   
   
-  #sessoes FNM sgr
-  serverSessoes("sgr_fnm_modulos", grupo = "fnm_sgr", "sessoes")
-  
-  
-  observe({
-    
-    print(input$Paneles)
-  })
   
   #Password admin ===============================================================
   

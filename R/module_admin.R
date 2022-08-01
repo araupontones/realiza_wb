@@ -1,7 +1,7 @@
 #Module sessoes
 library(dplyr)
 library(ggplot2)
-library(shinymanager)
+library(shinycssloaders)
 
 #Check password ===============================================================
 data_login <- tibble(
@@ -26,29 +26,6 @@ ModalAdmin <- function(failed= FALSE){
   
 }
 
-#message for the user =============================================================
-now <- Sys.time()
-
-
-foo <- function() {
-  message("Saving FNM<br>")
-  Sys.sleep(0.5)
-  message("Saving SGR<br>")
-  Sys.sleep(0.5)
-  message("Refresh the dashboard to update the tables!")
-  
-}
-
-#check that the data was updated correctly =====================================
-check_download <- function(now){
-  
-    file_info <- file.info("data/2.Dashboard/sgr_stats.rds")
-    last_update <- file_info$mtime
-    is_refreshed <- last_update > now
-    rio::export(last_update, "data/2.Dashboard/last_refreshed.rds")
-    return(is_refreshed)
-  
-}
 
 
 
@@ -61,7 +38,21 @@ ui_admin <- function(id){
      
    
      actionButton(NS(id,"btn_atualizar"), "Atualizar data"),
-     textOutput(NS(id,"text"))
+     actionButton(NS(id, "btn_check"), "Criar checks aleatórios"),
+     
+     br(),
+     br(),
+     #Let the user know that all is fine --------------------------------------------------------------
+     #table checks
+     shinycssloaders::withSpinner(DT::dataTableOutput(NS(id,"table_check")), color = "red"),
+     #table updated files
+     shinycssloaders::withSpinner(DT::dataTableOutput(NS(id,"table_dwnlds")), color = "red"),
+     #buton download checks
+     br(),
+     uiOutput(NS(id,"ui_dwld_checks")),
+     #let the user know that the data is downloading and will download
+     uiOutput(NS(id,"ui_dwld_info"))
+     
      
  )
   
@@ -75,42 +66,66 @@ serverAdmin <- function(id) {
     
     
     
-   
+  #create random check  -----------------------------------------
   
-    
-    
-    
-    
-    #update the data ==========================================================
-    
-      observeEvent(input$btn_atualizar,{
+    data_checks <- eventReactive(input$btn_check,{
       
-        #message to the user
-        shinyjs::html(id = "text", html = "Downlading...", add = TRUE)
-        
-        #Download the data
-        source("R_/X.Run_flow.R", encoding = "UTF-8")
+      #function saved in R
+      #it reads the clean presencas and selects a record by city
+      #this record is the latest present record of an emprendora
+      create_random_check()
       
-     
-       
-      #let the user now that all went well and saved the last_refreshed time 
-      if(check_download(now)){
-        
-        withCallingHandlers({
-          shinyjs::html("text", "")
-          foo()
-        },
-        message = function(m) {
-          shinyjs::html(id = "text", html = m$message, add = TRUE)
-        })
-        
-        
-        
+    })
+    
+    
+    #display checks to user
+    output$table_check <- DT::renderDataTable({
+      
+      data_checks()
+    })
+    
+    #download random checks -----------------------------------------------
+    output$ui_dwld_checks <- renderUI({
+      
+      req(data_checks())
+      
+      downloadButton(NS(id,"downloadChecks"), "Baixar tabela de verificação")
+      
+      
+    })
+    
+    
+    output$downloadChecks <- downloadHandler(
+      
+      
+      filename = function() {
+        paste("verificacao_realiza_",Sys.Date(),".csv", sep = "")
+      },
+      content = function(file) {
+        write.csv(data_checks(), file, row.names = FALSE)
       }
+    )
+    
+    
+#Download data =================================================================
+    data_dwln <- eventReactive(input$btn_atualizar, {
       
+      
+      source("R_/X.Run_flow.R", encoding = "UTF-8")
+      
+      tibble(Files = list.files("data/2.Dashboard"))
+      
+      
+    })
     
-      })
     
+#inform the user which files have been updated
+    output$table_dwnlds <- DT::renderDataTable({
+      
+      data_dwln()
+    })
+   
+     
    
     
     

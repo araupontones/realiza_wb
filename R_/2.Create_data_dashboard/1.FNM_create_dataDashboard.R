@@ -57,9 +57,9 @@ emprendedoras <- lapply(split(fnm_clean, fnm_clean$Emprendedora), function(emp){
     
     emprendedora <- act$Emprendedora[1]
     activity <- act$actividade[1]
-    #agente <- act$Agente[1]
     
-    #print(activity)
+    message(emprendedora)
+   
     mandatory <- as.numeric(actividades$sessoes[actividades$actividade == activity])
     #print(activity)
     #message(emprendedora)
@@ -95,8 +95,9 @@ emprendedoras <- lapply(split(fnm_clean, fnm_clean$Emprendedora), function(emp){
   
 })
 
+
 #append all emprendoras 
-emprendedoras_dashboard <- do.call(rbind, emprendedoras) %>%
+emprendedoras_dashboard <- do.call(rbind, emprendedoras)  %>%
   mutate(#Pendente de agendar
          Status = ifelse(is.na(Status), "Pendente", Status),
          #Create div
