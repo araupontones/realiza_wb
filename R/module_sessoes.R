@@ -100,7 +100,8 @@ serverSessoes <- function(id, grupo, tipo_sessao = "modulos") {
     data_cidade <- reactive({
       
       data_sessoes %>%
-        dplyr::filter(Cidade == input$cidades)
+        dplyr::filter(Cidade == input$cidades) %>%
+        select(-grupo_accronym)
     })
     
     agentes_reactive <- reactive({
@@ -145,6 +146,7 @@ serverSessoes <- function(id, grupo, tipo_sessao = "modulos") {
     
     
     output$header <- renderUI({
+      print(id)
       #get average of presencas of this agente
       avg <- stats_agentes()$presencas_avg[stats_agentes()$Agente == input$agentes]
       
@@ -156,7 +158,7 @@ serverSessoes <- function(id, grupo, tipo_sessao = "modulos") {
       ),
         tags$div(
           #created in R/define_parameters_grupos.R
-          define_legend(grupo)
+          define_legend(x = id)
         ),
      
       )

@@ -100,6 +100,8 @@ emprendedoras <- lapply(split(fnm_clean, fnm_clean$Emprendedora), function(emp){
 emprendedoras_dashboard <- do.call(rbind, emprendedoras)  %>%
   mutate(#Pendente de agendar
          Status = ifelse(is.na(Status), "Pendente", Status),
+         #mark ausente and pendente as 0 if the presenca has not been marked
+         across(c(presente, ausente), function(x){ifelse(pendente == 1, 0, x)}),
          #Create div
          div = div_status(presente, ausente, agendado, pendente),) %>%
   #droping because it is a SGR activiry
@@ -110,6 +112,7 @@ emprendedoras_dashboard <- do.call(rbind, emprendedoras)  %>%
 #Statistics by emprendedora ====================================================
 #By emprendedora:
 #displays the number of sessoes by actividade
+
 
 fnm_stats <- emprendedoras_dashboard %>%
   #short the names of the actividades for frienlier display
