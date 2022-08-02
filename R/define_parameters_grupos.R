@@ -57,8 +57,9 @@ define_accronym <- function(x){
 #' the bolinhas that explain the status of the activities
 
 define_legend <- function(x){
+
   
-  if(x == "fnm"){
+  if(grepl("sessoes", x)){
     
     legend <- tags$p(
       tags$div(class = "dot green"), "Presente",
@@ -67,19 +68,9 @@ define_legend <- function(x){
       tags$div(class = "dot yellow", "X"), "Agente não marcou",
       tags$div(class = "dot empty"), "Sem Agenda"
       
-    )
+    ) }
     
-  } else if(x == "sgr"){
-    
-    legend <- tags$p(
-      tags$div(class = "dot green"), "Presente",
-      tags$div(class = "dot red"), "Ausente",
-      tags$div(class = "dot yellow", "X"), "Agente não marcou",
-      tags$div(class = "dot empty"), "Ainda não aconteceu"
-      
-    )
-    
-  } else {
+ else {
     
     legend <- 
     tags$p(
@@ -90,9 +81,13 @@ define_legend <- function(x){
     )
   }
   
+  
+
+  
   return(legend)
   
 }
+  
 
   
   
