@@ -1,5 +1,6 @@
 #dependencies
 source("functions/download_all_reports.R")
+source("R_/0.LookUps/utils.R")
 library(rio)
 
 exdir <- "data/0look_ups"
@@ -19,6 +20,8 @@ emprendedoras_zoho <- download_realiza('Emprendedoras_Report')
 
 #Look up emprendedoras ========================================================
 
+
+
 emprendedoras <- emprendedoras_zoho %>%
   select(ID_BM,
         Emprendedora,
@@ -28,7 +31,12 @@ emprendedoras <- emprendedoras_zoho %>%
         Grupo = Grupos,
         status_realiza)%>%
     distinct() %>%
+  #Clean agente and grupos_fixos
+  mutate(across(c(Agente, Grupos_fixos), function(x)clean_zoho_lisr(x))
+         ) %>%
   left_join(select(grupos_zoho, Grupo = grupo, grupo_accronym), by = "Grupo")
+
+
 
 
 
