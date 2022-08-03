@@ -146,5 +146,6 @@ fnm_div <- fnm_stats %>%
 export(fnm_stats, exfile_fnm_stats)
 export(fnm_div, exfile_fnm_div)
 
-
+last_refreshed <-Sys.time()
+export(last_refreshed, file.path(exdir, "last_refreshed.rds"))
 

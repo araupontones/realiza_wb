@@ -11,6 +11,7 @@ ui <- fluidPage(
   shinyjs::useShinyjs(),
   theme = shinytheme("yeti"),
   
+  uiOutput("last_refreshed"),
   navbarPage("Realiza",
              id = "Paneles",
              
@@ -47,7 +48,14 @@ ui <- fluidPage(
 
 server <- function(input, output, session) {
   
+last_refreshed <- rio::import("data/2.Dashboard/last_refreshed.rds")
 
+output$last_refreshed <- renderUI({
+  
+  text <- paste("Última atualização:", last_refreshed)
+  
+  p(text)
+})
 
   
 #Server grupos  ================================================================
