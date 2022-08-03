@@ -85,7 +85,7 @@ create_dates <- function(.data, date_var){
   
   
   #re set localle to portuguese so the dates are in in this langiage
-  prt <- Sys.setlocale("LC_ALL","Portuguese")
+  #prt <- Sys.setlocale("LC_ALL","Portuguese")
   
   #transform data character in Portuguese
   data_port <- data_date %>%
