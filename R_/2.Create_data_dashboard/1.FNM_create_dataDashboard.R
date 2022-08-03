@@ -58,7 +58,7 @@ emprendedoras <- lapply(split(fnm_clean, fnm_clean$Emprendedora), function(emp){
     emprendedora <- act$Emprendedora[1]
     activity <- act$actividade[1]
     
-    message(emprendedora)
+    #message(emprendedora)
    
     mandatory <- as.numeric(actividades$sessoes[actividades$actividade == activity])
     #print(activity)
