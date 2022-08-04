@@ -46,12 +46,14 @@ ui_admin <- function(id){
      #table checks
      shinycssloaders::withSpinner(DT::dataTableOutput(NS(id,"table_check")), color = "red"),
      #table updated files
+     #let the user know to refresh the page when downloaded
+     uiOutput(NS(id,"ui_refresh_msg")),
      shinycssloaders::withSpinner(DT::dataTableOutput(NS(id,"table_dwnlds")), color = "red"),
      #buton download checks
      br(),
-     uiOutput(NS(id,"ui_dwld_checks")),
-     #let the user know that the data is downloading and will download
-     uiOutput(NS(id,"ui_dwld_info"))
+     uiOutput(NS(id,"ui_dwld_checks"))
+     
+     
      
      
  )
@@ -123,6 +125,18 @@ serverAdmin <- function(id) {
     output$table_dwnlds <- DT::renderDataTable({
       
       data_dwln()
+    })
+    
+    
+    text_info <- eventReactive( data_dwln(), {
+      
+      "Atualização bem-sucedida, atualize a página ou pressione Ctrl + R para que o painel leia os dados atualizados"
+      
+    })
+    
+    output$ui_refresh_msg <- renderUI({
+      
+      h1(text_info())
     })
    
      
