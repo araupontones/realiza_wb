@@ -1,6 +1,6 @@
 download_realiza <- function(report){
   
-  rep <- zohor::get_report_bulk(url_app = "https://creator.zoho.com",
+  rep <- get_report_bulk(url_app = "https://creator.zoho.com",
                                account_owner_name = "araupontones",
                                app_link_name = "realiza",
                                report_link_name = report,
