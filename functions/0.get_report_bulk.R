@@ -126,7 +126,9 @@ get_report_bulk <- function(
   ##unnest variables in list format
   reporte_clean <- reporte %>%
     mutate_if(is.list, unnest_value_from_list) %>%
-    mutate_if(is.list, unlist)
+    mutate_if(is.list, unlist) %>%
+    #remove value from list
+    mutate_if(is.character, clean_zoho_list)
   
   
   return(reporte_clean)

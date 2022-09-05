@@ -133,8 +133,8 @@ serverSessoes <- function(id, grupo, tipo_sessao = "modulos") {
       data_stats %>%
       dplyr::filter(Cidade == input$cidades) %>%
       group_by(Agente) %>%
-      summarise(sessoes = sum(sessoes_total, na.rm = T),
-                presencas = sum(presente_total, na.rm = T),
+      summarise(sessoes = sum(sessoes_total & status_realiza == "CONFIRMADA", na.rm = T),
+                presencas = sum(presente_total & status_realiza == "CONFIRMADA", na.rm = T),
                 presencas_avg = presencas/sessoes,
                 .groups = 'drop'
       ) %>%

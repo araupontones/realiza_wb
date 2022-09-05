@@ -70,11 +70,11 @@ serverOverview <- function(id) {
 #data for cards ================================================================
     data_cards <- reactive({
       
-      
       #registradas
       total <- data_emp_cidades() %>%
         group_by(grupo_accronym) %>%
         summarise(total_emp = n(), .groups = 'drop',
+                  #Mulheres confirmadas no programa
                   confirmadas  = sum(status_realiza == "CONFIRMADA"), 
                   confirmadas_perc  = paste0(round(confirmadas / total_emp * 100,2), "%")
                   
@@ -88,9 +88,16 @@ serverOverview <- function(id) {
         dplyr::filter(!is.na(actividade)) %>%
         group_by(grupo_accronym) %>%
         summarise(total_act = length(unique(actividade, Data)),
-                  presenca = paste0(round(mean(Status == "Presente", na.rm =T) * 100,1), "%"),
+                  #presencas sessao inaugural do total
                   sessao_inagural = sum(actividade == "Sessão Inaugural" & Status == "Presente"),
+                  #count confirmadas en listas
+                  confirmadas = sum(status_realiza == "CONFIRMADA"),
+                  #count presencas
+                  presencas = sum(Status == "Presente" & status_realiza == "CONFIRMADA"),
+                  #estimate ration of presencas of confirmadas
+                  presenca_perc = paste0(round(presencas/confirmadas * 100,1), "%"),
                   .groups = 'drop'
+                  
         )
       
       
@@ -132,10 +139,7 @@ serverOverview <- function(id) {
                                           paste("Participou da sessão inaugural (do total):", x$sessao_inagural_perc)
                                   ),
                                   tags$li(class = 'list-group-item',
-                                          paste("Actividades facilitadas:", x$total_act)
-                                  ),
-                                  tags$li(class = 'list-group-item',
-                                          paste("Taxa de presença nas actividades", x$presenca)
+                                          paste("Taxa de presença nas actividades (das confirmadas):", x$presenca_perc)
                                   )
                           )
                           

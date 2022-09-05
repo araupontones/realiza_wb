@@ -10,8 +10,8 @@ ui_summary <- function(id){
                    selectInput(NS(id,"by"), 
                                label = "Desagregação",
                                choices = setNames(
-                                 c("Cidade", "Grupo", "actividade"),
-                                 c("Cidade", "Grupo", "Actividades")
+                                 c("Cidade", "Grupo"),
+                                 c("Cidade", "Grupo")
                                 
                                )),
                    
@@ -20,6 +20,7 @@ ui_summary <- function(id){
                    ),
       mainPanel(
         
+        h3("Os gráficos mostram a taxa de frequência das participantes CONFIRMADAS pelo programa"),
         plotOutput(NS(id,"plot"))
         
       )
@@ -36,7 +37,8 @@ serverSummary<- function(id) {
   moduleServer(id, function(input, output, session) {
     
     
-    data_summary <- rio::import("data/1.zoho/3.clean/all_presencas.rds")
+    data_summary <- rio::import("data/1.zoho/3.clean/all_presencas.rds") %>%
+      dplyr::filter(status_realiza == "CONFIRMADA")
   
     
     data_plot <- reactive({
@@ -69,6 +71,7 @@ serverSummary<- function(id) {
       if(input$by_time){
         
         data_plot() %>%
+          mutate(week = week - (min(week) - 1)) %>%
           ggplot(
             aes(x = week,
                 y = mean_presenca,
@@ -76,8 +79,26 @@ serverSummary<- function(id) {
                 )
           ) +
           
-          geom_line()
-          
+          geom_line(size = 2) +
+          labs(y = "Presenças (%)",
+               x = "Semana de implementação" 
+          ) +
+          scale_y_continuous(labels = function(x)x*100) +
+          scale_color_manual(values = c("#A45EDA", "#F77333", "#5DD4C8"))+
+          theme(axis.ticks = element_blank(),
+                axis.title = element_text(size = 20),
+                axis.title.y = element_text(margin = margin(r = 10)),
+                axis.text = element_text(size = 16),
+                plot.background = element_blank(),
+                panel.background = element_blank(),
+                panel.grid.minor.y =  element_line(linetype = "dotted", color = "gray"),
+                panel.grid.major.y =  element_line(linetype = "dotted", color = "gray")
+          ) +
+          theme(legend.title = element_blank(),
+                legend.position = "top",
+                legend.text = element_text(size = 12),
+                legend.key = element_rect(fill = NA)
+                )
       } else {
         
         
@@ -99,6 +120,7 @@ serverSummary<- function(id) {
                 axis.title = element_text(size = 20),
                 axis.title.y = element_text(margin = margin(r = 10)),
                 axis.text = element_text(size = 16),
+                axis.text.x = element_text(angle = 90),
                 
                 plot.background = element_blank(),
                 panel.background = element_blank(),

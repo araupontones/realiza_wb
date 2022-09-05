@@ -30,11 +30,11 @@ exfile_fnm_stats <- file.path(exdir, "fnm_stats.rds")
 exfile_fnm_div <- file.path(exdir, "fnm_div.rds")
 
 #read data =====================================================================
-actividades <- import(file.path(dir_lkps, "actividades.rds"))
-emprendedoras_lkp <- import(file.path(dir_lkps, "emprendedoras.rds"))
-# agentes <- import(file.path(dir_lkps, "agentes.rds"))
-fnm_clean <- import(infile_fnm)
+actividades <- import(file.path(dir_lkps, "actividades.rds")) %>%
+  select(-ID_actividade, - por) %>% distinct()
 
+emprendedoras_lkp <- import(file.path(dir_lkps, "emprendedoras.rds"))
+fnm_clean <- import(infile_fnm)
 
 
 #Each activity has a number of mandatory sessions
@@ -78,11 +78,11 @@ emprendedoras <- lapply(split(fnm_clean, fnm_clean$Emprendedora), function(emp){
     )
     
     
-    return_this <- plyr::rbind.fill(act, sessions_todo)
+    return_this <- plyr::rbind.fill(act, sessions_todo) 
     
   } else {
     
-    return_this <- act
+    return_this <- act 
   }
    
     
@@ -97,7 +97,8 @@ emprendedoras <- lapply(split(fnm_clean, fnm_clean$Emprendedora), function(emp){
 
 
 #append all emprendoras 
-emprendedoras_dashboard <- do.call(rbind, emprendedoras)  %>%
+emprendedoras_dashboard <- do.call(rbind, emprendedoras) %>%
+  
   mutate(#Pendente de agendar
          Status = ifelse(is.na(Status), "Pendente", Status),
          #mark ausente and pendente as 0 if the presenca has not been marked
@@ -107,6 +108,8 @@ emprendedoras_dashboard <- do.call(rbind, emprendedoras)  %>%
   #droping because it is a SGR activiry
   dplyr::filter(actividade != "Sessões de coaching") %>%
   arrange(Emprendedora,actividade, data_posix)
+
+
 
 
 #Statistics by emprendedora ====================================================
@@ -122,9 +125,6 @@ fnm_stats <- emprendedoras_dashboard %>%
   #fetch cidade from Agente
   left_join(emprendedoras_lkp, by = "Emprendedora") %>%
   relocate(Cidade, grupo_accronym, Agente, Emprendedora)
-
-
-
 
 
 #Data div =====================================================================

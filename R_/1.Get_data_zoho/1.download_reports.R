@@ -37,7 +37,6 @@ fetch_this <- c(
 reportes <- purrr::map(fetch_this, download_realiza)
 names(reportes) <- names(fetch_this)
 
-
 #Export ========================================================================
 # export list of reportes
 export(reportes, exfile)

@@ -5,8 +5,8 @@ library(shinycssloaders)
 
 #Check password ===============================================================
 data_login <- tibble(
-  user = c("admin", "Andres"),
-  password = c("admin", "admin")
+  user = c("admin", "Andres", "MEL"),
+  password = c("admin", "admin", "MEL")
 )
 
 ModalAdmin <- function(failed= FALSE){

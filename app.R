@@ -14,6 +14,18 @@ ui <- fluidPage(
   uiOutput("last_refreshed"),
   navbarPage("Realiza",
              id = "Paneles",
+             navbarMenu("Resumo",
+                        tabPanel("Overview",
+                                 ui_overview("overview")
+                        ),
+                        tabPanel("Presencas",
+                                 ui_summary("summary")
+                                 
+                        )
+                        
+             ),
+             
+            
              
             panels_FNM("FNM"),
              
@@ -22,22 +34,14 @@ ui <- fluidPage(
             panels_SGR_FNM("FNM + SGR"),
              
             panel_powerBI("Feedback"),
+            
+            tabPanel("Admin",
+                     ui_admin("admin")),
              
-            navbarMenu("Resumo",
-                       tabPanel("Overview",
-                                ui_overview("overview")
-                                ),
-                       tabPanel("Presencas",
-                                ui_summary("summary")
-                                
-                                )
-                       
-            ),
+         
                        
                  
-            
-             tabPanel("Admin",
-                      ui_admin("admin"))
+           
             
             
   )
@@ -73,14 +77,19 @@ activate_tabs_grupos(grupos = c("fnm", "sgr", "sgr_fnm"),
 serverOverview("overview") 
 serverSummary("summary")
   
-  
+  observe({
+    
+    print(input$Paneles)
+  })
   
   #Password admin ===============================================================
   
-  
+paneles <- c("Admin", "Feedback", "sessoes_fnm", "modulos_sgr", "sessoes_sgr_fnm")
+
+lapply(paneles, function(x){
   
   observe({
-    if (input$Paneles == "Admin")  {
+    if (input$Paneles == x)  {
       
       showModal(
         ModalAdmin()
@@ -88,6 +97,12 @@ serverSummary("summary")
       
     }
   })
+  
+  
+})
+  
+  
+
   
   observeEvent(input$ok,{
     
