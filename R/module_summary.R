@@ -19,8 +19,7 @@ ui_summary <- function(id){
                    checkboxInput(NS(id,"by_time"), label = "Ao longo do tempo", value = TRUE),
                    ),
       mainPanel(
-        
-        h3("Os gráficos mostram a taxa de frequência das participantes CONFIRMADAS pelo programa"),
+        uiOutput(NS(id,"header_confirmadas")),
         plotOutput(NS(id,"plot"))
         
       )
@@ -33,13 +32,15 @@ ui_summary <- function(id){
 #Server ===================================================================
 
 #Server ======================================================================
-serverSummary<- function(id) {
+serverSummary<- function(id, dir_data) {
   moduleServer(id, function(input, output, session) {
     
     
-    data_summary <- rio::import("data/1.zoho/3.clean/all_presencas.rds") %>%
+    data_summary <- rio::import(file.path(dir_data,"1.zoho/3.clean/all_presencas.rds")) %>%
       dplyr::filter(status_realiza == "CONFIRMADA")
+    
   
+    confirmadas <- length(unique(data_summary$Emprendedora))
     
     data_plot <- reactive({
       
@@ -64,6 +65,14 @@ serverSummary<- function(id) {
     })
     
     
+    
+    output$header_confirmadas <- renderUI({
+      
+      HTML(
+        glue("<h3>Os gráficos mostram a taxa de frequência das {confirmadas} participantes CONFIRMADAS pelo programa </h3>")
+      
+      )
+        })
     
     output$plot <- renderPlot({
       
