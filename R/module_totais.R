@@ -1,0 +1,212 @@
+library(rio)
+library(janitor)
+library(tidyr)
+library(ggplot2)
+
+selections <- setNames(
+  #values
+  c("Status", "Cidade", "Componente", "Cidade_componente"),
+  #labels
+  c("Seu Todo", "Por Cidade", "Por Componente", "Por Cidade e Componente")
+  
+)
+
+ui_totals <- function(id){
+  
+  
+  tagList(
+    
+    sidebarLayout(
+      
+      sidebarPanel(width = 3,
+                   selectInput(NS(id,"by"), 
+                               label = "Números da operação por:",
+                               choices = selections
+                               
+                   )
+      ),
+      mainPanel(
+        uiOutput(NS(id,"header")),
+        plotOutput(NS(id,"plot"))
+        
+      )
+    )
+    
+  )
+}
+
+
+#Server ===================================================================
+
+#Server ======================================================================
+serverTotals<- function(id, dir_data) {
+  moduleServer(id, function(input, output, session) {
+    
+    #prepare data -----------------------------------------------------------------
+    ## read look up of emprendedoras
+    emprendedoras <- import(file.path(dir_data,"0look_ups/emprendedoras.rds"))
+    
+    ##identify emprendedoras that attended to the first session
+    inaugural<- import(file.path(dir_data,"1.zoho/3.clean/all_presencas.rds")) %>% 
+      filter(actividade =="Sessão Inaugural" & Status == "Presente") %>%
+      select(Emprendedora, Status)
+    
+    
+    
+    
+    
+    ## Join lookup of emprendedoras with peresencas of first session
+    data_totais <- emprendedoras %>%
+      select(Emprendedora, Cidade, 
+             Componente = grupo_accronym,
+             status_realiza) %>%
+      left_join(inaugural, by = "Emprendedora") %>%
+      group_by(Componente, Cidade) %>%
+      ##Count total in WB data, Confirmadas, and those who attended the first session
+      summarise(`Nas Listas BM` = n(),
+                `Interesadas em atender` = sum(status_realiza == "CONFIRMADA", na.rm = T),
+                `Veio sessao inaugural` = sum(!is.na(Status)),
+                .groups = 'drop'
+      ) %>%
+      pivot_longer(-c(Componente, Cidade),
+                   names_to = "Status") %>%
+      mutate(Status = factor(Status,
+                             levels = c("Nas Listas BM",
+                                        "Interesadas em atender",
+                                        "Veio sessao inaugural"
+                             )))
+    
+    
+    
+    # reactive data -----------------------------------------------------------
+    data_plot <- reactive({
+      
+      
+      
+      if(input$by == "Cidade_componente"){
+        
+        agrupar_por <- c("Cidade", "Componente", "Status")
+        
+      } else if (input$by %in% c("Cidade", "Componente")){
+        
+        agrupar_por <- c(input$by, "Status")
+      } else {
+        
+        agrupar_por <- input$by
+      }
+      
+      
+      data_plot <- data_totais %>%
+        group_by_at(agrupar_por) %>%
+        summarise(value = sum(value),
+                  .groups = 'drop')
+      
+      
+    })
+    
+    
+    
+    output$header <- renderUI({
+      
+      HTML(
+        glue("<h5>Os gráficos mostram os números de operação das 
+             emprendedoras na base da lista final do BM, 
+             das que informarão que estavam interessadas em atender,
+             e de quem veio na sessao inaugural. </h5>")
+        
+      )
+    })
+    
+    output$plot <- renderPlot({
+      
+      print(names(data_plot()))
+      upper_limit = max(data_plot()$value)
+      
+      #if it is seu todo
+      if(input$by == "Status") {
+        
+        base_plot <- data_plot() %>% 
+          ggplot(aes(x = "",
+                     y = value,
+                     fill = Status,
+                     label = value,
+                     color = Status)
+          )
+        
+      } else if (input$by %in% c("Cidade")){
+        
+        base_plot <- data_plot() %>% 
+          ggplot(aes(x = Cidade,
+                     y = value,
+                     fill = Status,
+                     label = value,
+                     color = Status)
+          )
+      } else if (input$by %in% c("Componente","Cidade_componente")){
+        
+        base_plot <- data_plot() %>% 
+          ggplot(aes(x = Componente,
+                     y = value,
+                     fill = Status,
+                     label = value,
+                     color = Status)
+          )
+        
+        
+      }
+      
+      plot <- base_plot +
+        geom_point(size = 6,
+                   shape = 21) +
+        geom_text(hjust = -.5) 
+      
+      if(input$by == "Cidade_componente"){
+        
+        plot <- plot +
+          facet_wrap(~Cidade,
+                     ncol = 3)
+        
+        
+        
+      }
+      
+      #Define theme
+      plot +
+        scale_y_continuous(limits = c(0,upper_limit)) +
+        scale_color_manual(values = c("#A45EDA", "#F77333", "#5DD4C8"))+
+        scale_fill_manual(values = c("#A45EDA", "#F77333", "#5DD4C8"))+
+        labs(
+          y = "Número de emprendedoras",
+          x = ""
+        ) +
+        theme(axis.ticks = element_blank(),
+              axis.title = element_text(size = 20),
+              axis.title.y = element_text(margin = margin(r = 10)),
+              axis.text = element_text(size = 16),
+              plot.background = element_blank(),
+              panel.background = element_blank(),
+              panel.grid.minor.y =  element_line(linetype = "dotted", color = "gray"),
+              panel.grid.major.y =  element_line(linetype = "dotted", color = "gray"),
+              legend.title = element_blank(),
+              legend.position = "top",
+              legend.text = element_text(size = 12),
+              legend.key = element_rect(fill = NA)
+        )
+      
+      
+      
+      
+    })
+    
+    
+    observeEvent(input$by,{
+      
+      print(input$by)
+      
+    })
+    
+    
+  })
+  
+  
+}

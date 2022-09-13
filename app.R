@@ -17,16 +17,20 @@ ui <- fluidPage(
   uiOutput("last_refreshed"),
   navbarPage("Realiza",
              id = "Paneles",
-             navbarMenu("Resumo",
-                        tabPanel("Overview",
-                                 ui_overview("overview")
-                        ),
-                        tabPanel("Presencas",
-                                 ui_summary("summary")
-                                 
-                        )
-                      
+             tabPanel("Números totais",
+                      ui_totals("Totals")
+             ),
+             navbarMenu(
+               "Resumo",
+               tabPanel("Overview",
+                        ui_overview("overview")
+               ),
+               tabPanel("Presencas",
+                        ui_summary("summary")
                         
+               )
+               
+               
              ),
              panels_FNM("FNM"),
              
@@ -34,12 +38,12 @@ ui <- fluidPage(
              
              panels_SGR_FNM("FNM + SGR")
              
-         
-                       
-                 
-           
-            
-            
+             
+             
+             
+             
+             
+             
   )
 )
 
@@ -63,47 +67,50 @@ server <- function(input, output, session) {
   
   dir_data <- file.path(dir_master,"data")
   
-
-last_refreshed <- rio::import(file.path(dir_data,"2.Dashboard/last_refreshed.rds"))
-
-output$last_refreshed <- renderUI({
   
-  text <- paste("Última atualização:", last_refreshed)
+  last_refreshed <- rio::import(file.path(dir_data,"2.Dashboard/last_refreshed.rds"))
   
-  p(text)
-})
-
+  output$last_refreshed <- renderUI({
+    
+    text <- paste("Última atualização:", last_refreshed)
+    
+    p(text)
+  })
   
-
-
   
-#server summary ================================================================
-serverOverview("overview", dir_data)
-
-serverSummary("summary", dir_data)
-
-
-#Activate the servers of each gropu when the tab is selected
-#For this to work the name id of the uis and values of panel should be consisten
-#See consistency in panels_FNM.R | Panels_SGR.R | Panels_SGR_FNM.R
-activate_tabs_grupos(grupos = c("fnm", "sgr", "sgr_fnm"), 
-                     tipos = c("sessoes", "modulos", "cidades"),
-                     input,
-                     session,
-                     dir_data
-)
-
-
+  
+  
+  
+  #server summary ================================================================
+  
+  serverTotals("Totals", dir_data)
+  
+  serverOverview("overview", dir_data)
+  
+  serverSummary("summary", dir_data)
+  
+  
+  #Activate the servers of each gropu when the tab is selected
+  #For this to work the name id of the uis and values of panel should be consisten
+  #See consistency in panels_FNM.R | Panels_SGR.R | Panels_SGR_FNM.R
+  activate_tabs_grupos(grupos = c("fnm", "sgr", "sgr_fnm"), 
+                       tipos = c("sessoes", "modulos", "cidades"),
+                       input,
+                       session,
+                       dir_data
+  )
+  
+  
   # 
   # observe({
   #   
   #   print(input$Paneles)
   # })
   
-
-
   
-
+  
+  
+  
   
 }
 
