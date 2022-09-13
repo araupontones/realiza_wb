@@ -21,6 +21,11 @@ ui <- fluidPage(
                       ui_totals("Totals")
              ),
              navbarMenu(
+               "Participação",
+               tabPanel("Essa Semana",
+                        ui_essa_semana("essa_samana")
+                        ),
+               
                "Resumo",
                tabPanel("Overview",
                         ui_overview("overview")
@@ -84,6 +89,7 @@ server <- function(input, output, session) {
   #server summary ================================================================
   
   serverTotals("Totals", dir_data)
+  serverEssaSemana("essa_samana", dir_data)
   
   serverOverview("overview", dir_data)
   
