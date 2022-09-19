@@ -23,8 +23,11 @@ ui <- fluidPage(
              navbarMenu(
                "Participação",
                tabPanel("Essa Semana",
-                        ui_essa_semana("essa_samana")
+                        ui_essa_semana("essa_samana", "Semana")
                         ),
+               tabPanel("Esse Mes",
+                        ui_essa_semana("esse_mes", "Mes")
+               ),
                
                "Resumo",
                tabPanel("Overview",
@@ -57,20 +60,17 @@ ui <- fluidPage(
 server <- function(input, output, session) {
   
   
-  sistema <- Sys.info()["sysname"]
-  
-  
-  if(sistema == "Windows"){
-    
-    dir_master <- file.path(dirname(getwd()), "realiza")
-    
-  } else {
-    
-    dir_master <- "/srv/shiny-server/realiza"
-  }
-  
-  
+#define path to data (data is saved in repo /realiza)===========================
+  dir_master <- define_dir_master()
   dir_data <- file.path(dir_master,"data")
+  dir_lookups <- file.path(dir_data,"0look_ups")
+  
+
+#Read data =====================================================================
+  
+  
+  emprendedoras <- import(file.path(dir_lookups,"emprendedoras.rds"))
+  
   
   
   last_refreshed <- rio::import(file.path(dir_data,"2.Dashboard/last_refreshed.rds"))
@@ -89,7 +89,8 @@ server <- function(input, output, session) {
   #server summary ================================================================
   
   serverTotals("Totals", dir_data)
-  serverEssaSemana("essa_samana", dir_data)
+  serverEssaSemana("essa_samana", dir_data, emprendedoras, periodo = "Semana")
+  serverEssaSemana("esse_mes", dir_data, emprendedoras, periodo = "Mes")
   
   serverOverview("overview", dir_data)
   

@@ -27,7 +27,7 @@ ui_totals <- function(id){
       ),
       mainPanel(
         uiOutput(NS(id,"header")),
-        plotOutput(NS(id,"plot"))
+        withSpinner(plotOutput(NS(id,"plot")))
         
       )
     )
@@ -45,12 +45,22 @@ serverTotals<- function(id, dir_data) {
     #prepare data -----------------------------------------------------------------
     ## read look up of emprendedoras
     emprendedoras <- import(file.path(dir_data,"0look_ups/emprendedoras.rds"))
+    presencas <- import(file.path(dir_data,"1.zoho/3.clean/all_presencas.rds"))
     
     ##identify emprendedoras that attended to the first session
-    inaugural<- import(file.path(dir_data,"1.zoho/3.clean/all_presencas.rds")) %>% 
+    inaugural<-  presencas %>% 
       filter(actividade =="Sessão Inaugural" & Status == "Presente") %>%
       select(Emprendedora, Status)
     
+    
+    ##identify emprendedoras that attended to the primera sessao
+    primera<- presencas %>%
+      group_by(Emprendedora) %>%
+      filter(data_posix == min(data_posix)) %>%
+      ungroup() %>%
+      mutate(actividade = "Primera sessao") %>%
+      filter(Status == "Presente") %>%
+      select(Emprendedora, Status_primera = Status)
     
     
     
@@ -61,11 +71,13 @@ serverTotals<- function(id, dir_data) {
              Componente = grupo_accronym,
              status_realiza) %>%
       left_join(inaugural, by = "Emprendedora") %>%
+      left_join(primera, by = "Emprendedora") %>%
       group_by(Componente, Cidade) %>%
       ##Count total in WB data, Confirmadas, and those who attended the first session
       summarise(`Nas Listas BM` = n(),
                 `Interesadas em atender` = sum(status_realiza == "CONFIRMADA", na.rm = T),
                 `Veio sessao inaugural` = sum(!is.na(Status)),
+                `Veio primera sessao` = sum(!is.na(Status_primera)),
                 .groups = 'drop'
       ) %>%
       pivot_longer(-c(Componente, Cidade),
@@ -73,7 +85,8 @@ serverTotals<- function(id, dir_data) {
       mutate(Status = factor(Status,
                              levels = c("Nas Listas BM",
                                         "Interesadas em atender",
-                                        "Veio sessao inaugural"
+                                        "Veio sessao inaugural",
+                                        "Veio primera sessao"
                              )))
     
     
@@ -110,9 +123,7 @@ serverTotals<- function(id, dir_data) {
       
       HTML(
         glue("<h5>Os gráficos mostram os números de operação das 
-             emprendedoras na base da lista final do BM, 
-             das que informarão que estavam interessadas em atender,
-             e de quem veio na sessao inaugural. </h5>")
+             emprendedoras. </h5>")
         
       )
     })
@@ -173,26 +184,13 @@ serverTotals<- function(id, dir_data) {
       #Define theme
       plot +
         scale_y_continuous(limits = c(0,upper_limit)) +
-        scale_color_manual(values = c("#A45EDA", "#F77333", "#5DD4C8"))+
-        scale_fill_manual(values = c("#A45EDA", "#F77333", "#5DD4C8"))+
+        scale_color_manual(values = c(palette))+
+        scale_fill_manual(values = c(palette))+
         labs(
           y = "Número de emprendedoras",
           x = ""
         ) +
-        theme(axis.ticks = element_blank(),
-              axis.title = element_text(size = 20),
-              axis.title.y = element_text(margin = margin(r = 10)),
-              axis.text = element_text(size = 16),
-              plot.background = element_blank(),
-              panel.background = element_blank(),
-              panel.grid.minor.y =  element_line(linetype = "dotted", color = "gray"),
-              panel.grid.major.y =  element_line(linetype = "dotted", color = "gray"),
-              legend.title = element_blank(),
-              legend.position = "top",
-              legend.text = element_text(size = 12),
-              legend.key = element_rect(fill = NA)
-        )
-      
+        theme_realiza()
       
       
       

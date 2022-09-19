@@ -2,6 +2,8 @@ library(rio)
 library(janitor)
 library(tidyr)
 library(ggplot2)
+library(shinycssloaders)
+
 
 selections_semana <- setNames(
   #values
@@ -25,7 +27,9 @@ selections_semana <- setNames(
   
 )
 
-ui_essa_semana <- function(id){
+#UI ===========================================================================
+#'@param periodo c("Semana", "Mes") it defines the labels of the selectors
+ui_essa_semana <- function(id, periodo = "Semana"){
   
   
   tagList(
@@ -33,8 +37,8 @@ ui_essa_semana <- function(id){
     sidebarLayout(
       
       sidebarPanel(width = 3,
-                   selectInput(NS(id, "Semana"),
-                               label = "Semana da operação",
+                   selectInput(NS(id, "periodo"),
+                               label = glue("{periodo} da operação"),
                                choices = ""),
                    selectInput(NS(id,"by"), 
                                label = "Números da operação por:",
@@ -44,7 +48,7 @@ ui_essa_semana <- function(id){
       ),
       mainPanel(
         uiOutput(NS(id,"header")),
-        plotOutput(NS(id,"plot"))
+        withSpinner(plotOutput(NS(id,"plot")))
         
       )
     )
@@ -56,13 +60,15 @@ ui_essa_semana <- function(id){
 #Server ===================================================================
 
 #Server ======================================================================
-serverEssaSemana<- function(id, dir_data) {
+
+#'@param periodo c("Semana", "Mes") defines whether to aggregate by semana or by mes
+serverEssaSemana<- function(id, dir_data, db_emprendedoras, periodo = "Semana") {
   moduleServer(id, function(input, output, session) {
     
     
     dir_lookups <- file.path(dir_data,"0look_ups")
-    
-    emprendedoras <- import(file.path(dir_lookups,"emprendedoras.rds"))
+    # 
+    emprendedoras <- db_emprendedoras
     
     #get name of modulos
     modulos <- import(file.path(dir_lookups,"sessoes.rds")) %>%
@@ -71,23 +77,52 @@ serverEssaSemana<- function(id, dir_data) {
     
     
     
-    presencas <- reactive(
+    presencas <- reactive({
       
-     import(file.path(dir_data,"1.zoho/3.clean/all_presencas.rds"))  %>%
+     presencas <- import(file.path(dir_data,"1.zoho/3.clean/all_presencas.rds"))  %>%
         rename(Componente = grupo_accronym) %>% 
         filter(Status == "Presente") %>%
-        mutate(week = week -29) %>%
-       left_join(modulos, by = "actividade") %>%
+       #Create variables for month and semana 
+       mutate(week = week -29,
+               month = month(data_posix, label = T, abbr = F)
+               ) %>%
+       #Get the label of the actividades
+       left_join(modulos, by = "actividade")  %>%
        mutate(actividade = ifelse(is.na(actividade_label), actividade, actividade_label))
-    )
+     
+         # #define periodo
+     if(periodo == "Semana"){
+       
+       presencas <- presencas %>% rename(periodo = week)
+     }
+     
+     if(periodo == "Mes"){
+
+       presencas <- presencas %>% rename(periodo = month)
+
+     }
+     
+     presencas
+     
+     
+     })
+     
+    
+
+     
+    
+    
+   
     
 #dynamically update choices for input$semanas ----------------------------------
     observe({
       
       #get semanas reported
-      semanas <- sort(unique(presencas()$week), decreasing = T)
+      semanas <- sort(unique(presencas()$periodo), decreasing = T)
+      message(names(presencas()))
+      print(unique(presencas()$periodo))
       updateSelectInput(session,
-                        "Semana",
+                        "periodo",
                         choices = semanas)
                         
       
@@ -100,11 +135,11 @@ serverEssaSemana<- function(id, dir_data) {
     this_week <- reactive({
       
       presencas() %>%
-        filter(week == input$Semana)
+        filter(periodo == input$periodo)
       
     })
     
-    
+#data that counts participacoes by periodo -------------------------------------  
     data_user <- reactive({
       
       #run function create_data_week, based on the selection of the user
@@ -117,15 +152,18 @@ serverEssaSemana<- function(id, dir_data) {
                                  `Por actividade por cidade` = create_data_week(this_week(), F, by = c("actividade", "Cidade"), double_group = T)
       )
       
+      #fetch data base that user selected
       db <- data_for_this_week[[input$by]]
       
       
-      cuantos_names <- length(names(db))
+     
        
       
       
       
       #Set names of data_plot based on type of plot
+      #I am doing this so all the names are consistent for plotting
+      cuantos_names <- length(names(db))
       if(cuantos_names==3){
         
         names(db) <- c("target", "facet", "value")
@@ -135,11 +173,11 @@ serverEssaSemana<- function(id, dir_data) {
       
     })
     
-    observe({
-      
-      print(names(data_user()))
-    })
+   
+   
     
+    
+     
     #Get first and last day of the week -----------------------------------------------------------------
   
     first_day <- reactive({min(this_week()$data_posix)})
@@ -152,6 +190,18 @@ serverEssaSemana<- function(id, dir_data) {
       
       length(names(data_user()))
     })
+    
+    
+    
+    #get figures of total emprendedoras by Cidade, componente, or both
+    #this is used to plot and compare participation against targets
+    data_totais <- reactive({
+      
+      create_data_totais(db_emprendedoras, input$by)
+      
+    })
+    
+    
     
     
     #Plot the data
@@ -180,28 +230,59 @@ serverEssaSemana<- function(id, dir_data) {
                      shape = 21,
                      aes(fill = target)
           )
+        }
+      
+      #add targets to check if participation is higher or lower than expeceted =
+      if(input$by %in% c("Seu todo", "Por Cidade", "Por Componente",
+                         "Por Cidade e Componente" )){
+        
+        plot <- plot +
+          geom_point(data = data_totais(),
+                     aes(x = target,
+                         y = total,
+                         color = "Na lista de BM"
+                         ),
+                     shape = 0,
+                     size = 4
+          ) +
+          geom_point(data = data_totais(),
+                     aes(x = target,
+                         y = interesadas,
+                         color = "Interesadas"
+                        ),
+                    
+                     fill = NA,
+                     shape = 2,
+                     size = 4
+                    
+          ) +
+          scale_color_manual(values = c("green", "black"), 
+                            guide = guide_legend(override.aes = list(shape = c(2,0))))
+                     
       }
       
       plot +
+        expand_limits(y = 0) +
         scale_fill_manual(values = palette)+
           labs(
             y = "Número de emprendedoras",
             x = ""
           ) +
-          theme(axis.ticks = element_blank(),
-                axis.title = element_text(size = 16),
-                axis.title.y = element_text(margin = margin(r = 10)),
-                axis.text = element_text(size = 10),
-                axis.text.x = element_text(angle = 90),
-                plot.background = element_blank(),
-                panel.background = element_blank(),
-                panel.grid.minor.y =  element_line(linetype = "dotted", color = "gray"),
-                panel.grid.major.y =  element_line(linetype = "dotted", color = "gray"),
-                legend.title = element_blank(),
-                legend.position = "top",
-                legend.text = element_text(size = 12),
-                legend.key = element_rect(fill = NA)
-          )
+        theme_realiza()
+          # theme(axis.ticks = element_blank(),
+          #       axis.title = element_text(size = 16),
+          #       axis.title.y = element_text(margin = margin(r = 10)),
+          #       axis.text = element_text(size = 10),
+          #       axis.text.x = element_text(angle = 90),
+          #       plot.background = element_blank(),
+          #       panel.background = element_blank(),
+          #       panel.grid.minor.y =  element_line(linetype = "dotted", color = "gray"),
+          #       panel.grid.major.y =  element_line(linetype = "dotted", color = "gray"),
+          #       legend.title = element_blank(),
+          #       legend.position = "top",
+          #       legend.text = element_text(size = 12),
+          #       legend.key = element_rect(fill = NA)
+          # )
       
     })
     
@@ -211,8 +292,8 @@ serverEssaSemana<- function(id, dir_data) {
     output$header <- renderUI({
 
       HTML(
-        glue("<h5>Os gráficos mostram o número de total emprendedores que participaram das atividades da Realiza durante e
-            <b>{first_day()} e {last_day()}</b>. </h5>")
+        glue("<h5>Os gráficos mostram o número de total emprendedores que participaram das atividades da Realiza durante
+             <b>{first_day()} e {last_day()}</b>. </h5>")
 
       )
     })
