@@ -22,29 +22,42 @@ ui <- fluidPage(
              ),
              navbarMenu(
                "Participação",
+               
+               #Semanal --------------------------------------------------------
+               "Semanal",
                tabPanel("Essa Semana",
                         ui_essa_semana("essa_samana", "Semana")
+                       
                         ),
+               tabPanel( 
+                 "Evolução semanal",
+                 ui_evolucao("evolucao_semanal", "Semana")
+                 ),
+               
+               
+               #mensal ----------------------------------------------------------
+               "Mensal",
                tabPanel("Esse Mes",
                         ui_essa_semana("esse_mes", "Mes")
+                       
                ),
                
-               "Resumo",
-               tabPanel("Overview",
-                        ui_overview("overview")
-               ),
-               tabPanel("Presencas",
-                        ui_summary("summary")
+               tabPanel( "Evolução mensual",
+                         ui_evolucao("evolucao_mensal", "Mes")
+                         )
+              
+               # tabPanel("Presencas",
+               #          ui_summary("summary")
                         
-               )
+               #)
                
                
-             ),
-             panels_FNM("FNM"),
-             
-             panels_SGR("SGR"),
-             
-             panels_SGR_FNM("FNM + SGR")
+             )
+             # panels_FNM("FNM"),
+             # 
+             # panels_SGR("SGR"),
+             # 
+             # panels_SGR_FNM("FNM + SGR")
              
              
              
@@ -89,12 +102,16 @@ server <- function(input, output, session) {
   #server summary ================================================================
   
   serverTotals("Totals", dir_data)
+  #Semanal ------------------------------------------------------------------
   serverEssaSemana("essa_samana", dir_data, emprendedoras, periodo = "Semana")
+  serverEvolucao("evolucao_semanal", dir_data, emprendedoras, periodo = "Semana")
+  
+  #Monthly --------------------------------------------------------------------
   serverEssaSemana("esse_mes", dir_data, emprendedoras, periodo = "Mes")
+  serverEvolucao("evolucao_mensal", dir_data, emprendedoras, periodo = "Mes")
+  #serverOverview("overview", dir_data)
   
-  serverOverview("overview", dir_data)
-  
-  serverSummary("summary", dir_data)
+  #serverSummary("summary", dir_data)
   
   
   #Activate the servers of each gropu when the tab is selected

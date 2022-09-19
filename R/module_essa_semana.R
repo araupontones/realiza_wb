@@ -57,7 +57,6 @@ ui_essa_semana <- function(id, periodo = "Semana"){
 }
 
 
-#Server ===================================================================
 
 #Server ======================================================================
 
@@ -66,54 +65,30 @@ serverEssaSemana<- function(id, dir_data, db_emprendedoras, periodo = "Semana") 
   moduleServer(id, function(input, output, session) {
     
     
+#look up emprendedoras----------------------------------------------------------
     dir_lookups <- file.path(dir_data,"0look_ups")
-    # 
     emprendedoras <- db_emprendedoras
     
-    #get name of modulos
-    modulos <- import(file.path(dir_lookups,"sessoes.rds")) %>%
-      mutate(actividade_label = "Modulos Obligatorios") %>%
-      rename(actividade = Modulo)
+   
     
-    
-    
+#load presencas and define period (either month or week)-----------------------
     presencas <- reactive({
       
-     presencas <- import(file.path(dir_data,"1.zoho/3.clean/all_presencas.rds"))  %>%
-        rename(Componente = grupo_accronym) %>% 
-        filter(Status == "Presente") %>%
-       #Create variables for month and semana 
-       mutate(week = week -29,
-               month = month(data_posix, label = T, abbr = F)
-               ) %>%
-       #Get the label of the actividades
-       left_join(modulos, by = "actividade")  %>%
-       mutate(actividade = ifelse(is.na(actividade_label), actividade, actividade_label))
+      #create data of presencas
+      #imports clean/all_presencas.rds
+      #keeps only status == Presente, creates month, names all modulos as modulos obligatorios
+      presencas <- create_data_presencas(dir_lookups, dir_data)
      
-         # #define periodo
-     if(periodo == "Semana"){
-       
-       presencas <- presencas %>% rename(periodo = week)
-     }
-     
-     if(periodo == "Mes"){
-
-       presencas <- presencas %>% rename(periodo = month)
-
-     }
+    #define periodo
+    #renmaes the variable week or month as periodo so it can be aggregated later
+    presencas <- define_var_periodo(presencas, periodo)
      
      presencas
-     
      
      })
      
     
 
-     
-    
-    
-   
-    
 #dynamically update choices for input$semanas ----------------------------------
     observe({
       
@@ -130,9 +105,9 @@ serverEssaSemana<- function(id, dir_data, db_emprendedoras, periodo = "Semana") 
     })
 
     
-#reactive data for semana
+#reactive data for period ------------------------------------------------------
 
-    this_week <- reactive({
+    this_period <- reactive({
       
       presencas() %>%
         filter(periodo == input$periodo)
@@ -143,22 +118,17 @@ serverEssaSemana<- function(id, dir_data, db_emprendedoras, periodo = "Semana") 
     data_user <- reactive({
       
       #run function create_data_week, based on the selection of the user
-      data_for_this_week <- list(`Seu todo` = create_data_week(this_week(), todos = T), 
-                                 `Por Cidade` = create_data_week(this_week(), F, by = Cidade),
-                                 `Por Componente` = create_data_week(this_week(), F, by = Componente),
-                                 `Por Cidade e Componente` = create_data_week(this_week(), F, by = c("Componente", "Cidade"), double_group = T),
-                                 `Por Actividade no seu todo` = create_data_week(this_week(), F, by = actividade),
-                                 `Por Actividade por Componente` = create_data_week(this_week(), F, by = c("actividade", "Componente"), double_group = T), 
-                                 `Por actividade por cidade` = create_data_week(this_week(), F, by = c("actividade", "Cidade"), double_group = T)
+      data_for_this_week <- list(`Seu todo` = create_data_week(this_period(), todos = T), 
+                                 `Por Cidade` = create_data_week(this_period(), F, by = Cidade),
+                                 `Por Componente` = create_data_week(this_period(), F, by = Componente),
+                                 `Por Cidade e Componente` = create_data_week(this_period(), F, by = c("Componente", "Cidade"), double_group = T),
+                                 `Por Actividade no seu todo` = create_data_week(this_period(), F, by = actividade),
+                                 `Por Actividade por Componente` = create_data_week(this_period(), F, by = c("actividade", "Componente"), double_group = T), 
+                                 `Por actividade por cidade` = create_data_week(this_period(), F, by = c("actividade", "Cidade"), double_group = T)
       )
       
       #fetch data base that user selected
       db <- data_for_this_week[[input$by]]
-      
-      
-     
-       
-      
       
       
       #Set names of data_plot based on type of plot
@@ -178,13 +148,13 @@ serverEssaSemana<- function(id, dir_data, db_emprendedoras, periodo = "Semana") 
     
     
      
-    #Get first and last day of the week -----------------------------------------------------------------
+#Get first and last day of the period -----------------------------------------------------------------
   
-    first_day <- reactive({min(this_week()$data_posix)})
-    last_day <- reactive({max(this_week()$data_posix)})
+    first_day <- reactive({min(this_period()$data_posix)})
+    last_day <- reactive({max(this_period()$data_posix)})
     
-    # Identify the number of variables in the data
-    # it there are 3 it is because it was grouped by 2 variables
+# Identify the number of variables in the data----------------------------------
+# if there are 3 it is because it was grouped by 2 variables
     
     cuantos_names <- reactive({
       
@@ -193,8 +163,13 @@ serverEssaSemana<- function(id, dir_data, db_emprendedoras, periodo = "Semana") 
     
     
     
-    #get figures of total emprendedoras by Cidade, componente, or both
-    #this is used to plot and compare participation against targets
+#get figures of total emprendedoras by Cidade, componente, or both -------------
+#this is used to plot and compare participation against targets
+#it creates a dataset with three names:
+#target (or grouping variable)
+# total : total emprendedoras na listas de BM
+# interesadas: total emprendedoras interesadas
+# facet: variable to facet the plot
     data_totais <- reactive({
       
       create_data_totais(db_emprendedoras, input$by)
@@ -204,7 +179,7 @@ serverEssaSemana<- function(id, dir_data, db_emprendedoras, periodo = "Semana") 
     
     
     
-    #Plot the data
+#Plot the data -----------------------------------------------------------------
     output$plot <- renderPlot({
       
       
