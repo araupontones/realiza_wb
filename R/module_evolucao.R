@@ -39,19 +39,19 @@ ui_evolucao <- function(id, periodo = "Semana"){
       
       sidebarPanel(width = 3,
                    selectInput(NS(id,"by"), 
-                               label = "Números da operação por:",
+                               label = h4("Números da operação por:"),
                                choices = selections_semana
                                
                    ),
                    selectInput(NS(id,"indicador"), 
-                               label = "Em relação ao:",
+                               label = h4("Em relação ao:"),
                                choices = setNames(c("bm", "interesadas"), c("Listas de BM", "Interesadas"))
                                
                    )
       ),
       mainPanel(
         uiOutput(NS(id,"header")),
-        withSpinner(plotlyOutput(NS(id,"plot")))
+        withSpinner(plotlyOutput(NS(id,"plot")), color = "black")
         
       )
     )

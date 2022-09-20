@@ -38,17 +38,17 @@ ui_evolucao_actividades <- function(id, periodo = "Semana"){
       
       sidebarPanel(width = 3,
                    selectInput(NS(id,"by"), 
-                               label = "Números da operação por:",
+                               label = h4("Números da operação por:"),
                                choices = selections_semana
                                
                    ),
-                   checkboxGroupInput(NS(id,"checkGroup"), label = h3("Select an actividade"), 
+                   checkboxGroupInput(NS(id,"checkGroup"), label = h4("Select an actividade"), 
                                       choices = list("Modulos" = 1, "Choice 2" = 2, "Choice 3" = 3),
                                       selected = 1)
       ),
       mainPanel(
         uiOutput(NS(id,"header")),
-        withSpinner(plotlyOutput(NS(id,"plot")))
+        withSpinner(plotlyOutput(NS(id,"plot")), color = "black")
         
       )
     )
@@ -197,7 +197,7 @@ serverEvolucaoActividades<- function(id, dir_data, db_emprendedoras, periodo = "
         #scale_fill_manual(values = palette)+
         labs(
           y = "Taxa de participacao (%)",
-          x = ""
+          x = periodo
         ) +
         theme_realiza() +
         scale_color_manual(values = c(palette),

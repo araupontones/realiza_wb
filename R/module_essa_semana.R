@@ -38,17 +38,17 @@ ui_essa_semana <- function(id, periodo = "Semana"){
       
       sidebarPanel(width = 3,
                    selectInput(NS(id, "periodo"),
-                               label = glue("{periodo} da operação"),
+                               label = h4(glue("{periodo} da operação")),
                                choices = ""),
                    selectInput(NS(id,"by"), 
-                               label = "Números da operação por:",
+                               label = h4("Números da operação por:"),
                                choices = selections_semana
                                
                    )
       ),
       mainPanel(
         uiOutput(NS(id,"header")),
-        withSpinner(plotOutput(NS(id,"plot")))
+        withSpinner(plotOutput(NS(id,"plot")), color = "black")
         
       )
     )

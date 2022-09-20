@@ -20,14 +20,14 @@ ui_totals <- function(id){
       
       sidebarPanel(width = 3,
                    selectInput(NS(id,"by"), 
-                               label = "Números da operação por:",
+                               label = h4("Números da operação por:"),
                                choices = selections
                                
                    )
       ),
       mainPanel(
         uiOutput(NS(id,"header")),
-        withSpinner(plotOutput(NS(id,"plot")))
+        withSpinner(plotOutput(NS(id,"plot")), color = "black")
         
       )
     )

@@ -3,8 +3,8 @@
 theme_realiza <- function(){
   
   theme(axis.ticks = element_blank(),
-        axis.title = element_text(size = 20),
-        axis.title.y = element_text(margin = margin(r = 10)),
+        axis.title = element_text(size = 16),
+        axis.title.y = element_text(margin = margin(r = 15)),
         axis.text = element_text(size = 16),
         plot.background = element_blank(),
         panel.background = element_blank(),
