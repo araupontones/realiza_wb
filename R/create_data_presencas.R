@@ -19,14 +19,15 @@ create_data_presencas <- function(dir_lookups, dir_data, keep = "Presente"){
     ) %>%
     #Aggregate all modulos into a single "Modulos obligatorios" gategory
     left_join(modulos, by = "actividade")  %>%
-    mutate(actividade = ifelse(is.na(actividade_label), actividade, actividade_label),
+    mutate(actividade = ifelse(is.na(actividade_label) | actividade == "Sessão Inaugural", actividade, actividade_label),
            actividade_label = case_when(actividade == "De mulher para mulher: Conecta!" ~ "Conecta",
                                         actividade == "Eventos de matchmaking" ~ "Matchmaking",
                                         actividade == "Modulos Obligatorios" ~ "Modulos",
                                         actividade == "Sessões de coaching" ~ "Coaching",
                                         actividade == "Sessões individuais" ~ "Individuais",
                                         actividade == "Workshops temáticos" ~ "Workshops",
-                                        T ~ actividade_label
+                                        actividade == "Sessão Inaugural" ~ "Inaugural",
+                                        T ~ "Modulos Obligatorios"
                                         
                                         
                                         ))
