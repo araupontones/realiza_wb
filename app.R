@@ -17,6 +17,9 @@ ui <- fluidPage(
   uiOutput("last_refreshed"),
   navbarPage("Realiza",
              id = "Paneles",
+             
+             
+             #Numeros totais ===================================================
              tabPanel("Números totais",
                       ui_totals("Totals")
              ),
@@ -46,13 +49,23 @@ ui <- fluidPage(
                          ui_evolucao("evolucao_mensal", "Mes")
                          )
               
+              
                # tabPanel("Presencas",
                #          ui_summary("summary")
                         
                #)
                
                
-             )
+             ),
+             
+             navbarMenu("Participação Actividades",
+                       
+                        tabPanel("Semanal",
+                                 ui_evolucao_actividades("evolucao_semanal_act", "Semana")),
+                        tabPanel("Mensal",
+                                 ui_evolucao_actividades("evolucao_mensal_act", "Mes"))
+                        
+                        )
              # panels_FNM("FNM"),
              # 
              # panels_SGR("SGR"),
@@ -111,6 +124,12 @@ server <- function(input, output, session) {
   serverEvolucao("evolucao_mensal", dir_data, emprendedoras, periodo = "Mes")
   #serverOverview("overview", dir_data)
   
+  
+  #Evoucao actividades ========================================================
+  
+  serverEvolucaoActividades("evolucao_semanal_act", dir_data, emprendedoras, periodo = "Semana")
+  serverEvolucaoActividades("evolucao_mensal_act", dir_data, emprendedoras, periodo = "Mes")
+  
   #serverSummary("summary", dir_data)
   
   
@@ -125,12 +144,12 @@ server <- function(input, output, session) {
   )
   
   
-  # 
-  # observe({
-  #   
-  #   print(input$Paneles)
-  # })
-  
+
+  observe({
+
+    print(input$Paneles)
+  })
+
   
   
   

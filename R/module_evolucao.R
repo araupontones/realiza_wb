@@ -146,15 +146,7 @@ serverEvolucao<- function(id, dir_data, db_emprendedoras, periodo = "Semana") {
     })
     # 
     
-    observe(
-      
-      print(data_evolucao_perc())
-    )
-    
-   observe(
-     
-     print(input$indicador)
-   )
+ 
     
    
     
