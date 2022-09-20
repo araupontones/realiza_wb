@@ -18,7 +18,9 @@ libraries <- c(
   "dplyr", "tidyr", "stringr",
   
   #carpintery
-  "lubridate", "janitor", "forcats", "gmdacr",
+  "lubridate", "janitor", "forcats", 
+  
+  #"gmdacr",
   
   
   #other
@@ -47,4 +49,4 @@ suppressWarnings({
   )
 })
 
-gmdacr::load_functions('functions')
+#gmdacr::load_functions('functions')
