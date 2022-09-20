@@ -2,6 +2,7 @@ library(rio)
 library(janitor)
 library(tidyr)
 library(ggplot2)
+library(plotly)
 library(shinycssloaders)
 
 
@@ -50,7 +51,7 @@ ui_evolucao <- function(id, periodo = "Semana"){
       ),
       mainPanel(
         uiOutput(NS(id,"header")),
-        withSpinner(plotOutput(NS(id,"plot")))
+        withSpinner(plotlyOutput(NS(id,"plot")))
         
       )
     )
@@ -91,8 +92,8 @@ serverEvolucao<- function(id, dir_data, db_emprendedoras, periodo = "Semana") {
     
     
     
-#get presencas over period -----------------------------------------------------
-   
+    #get presencas over period -----------------------------------------------------
+    
     
     
     
@@ -102,7 +103,7 @@ serverEvolucao<- function(id, dir_data, db_emprendedoras, periodo = "Semana") {
       
     })
     
-#get figures of total emprendedoras by Cidade, componente, or both -------------
+    #get figures of total emprendedoras by Cidade, componente, or both -------------
     #this is used to plot and compare participation against targets
     #it creates a dataset with three names:
     #target (or grouping variable)
@@ -114,9 +115,9 @@ serverEvolucao<- function(id, dir_data, db_emprendedoras, periodo = "Semana") {
       create_data_totais(db_emprendedoras, input$by)
       
     })
-
+    
     data_evolucao_perc <- reactive({
-
+      
       db <- data_evolucao() %>%
         left_join(data_totais()) %>%
         mutate(presencas_bm = presentes/total,
@@ -129,31 +130,34 @@ serverEvolucao<- function(id, dir_data, db_emprendedoras, periodo = "Semana") {
         db <- db %>% mutate(periodo = factor(as.character(periodo),
                                              labels = as.character(seq(1,max(db$periodo),1)),
                                              ordered = T
-                                             )
-                            )
+        )
+        )
       } 
-
+      
       if(input$indicador == "bm"){
         
         db <- db %>% filter(Indicador == "presencas_bm" )
       } else {
         
-        db <- db %>% filter(Indicador == "presencas_interesadas" )
+        db <- db %>% filter(Indicador == "presencas_interesadas" ) %>%
+          mutate(total = interesadas)
       }
-     
-      db
-
+      
+      db %>%
+        mutate(Participantes = glue("{presentes} 
+                                    Total nas {text_header()}: {total}
+                                    Taxa de participacao: {paste0(round(value * 100,1),'%')}"
+                                    )
+               )
+      
     })
     # 
     
- 
     
-   
-    
-    
-    
-    
-
+    # observe(
+    #   print(data_evolucao_perc())
+    #   
+    # )
     
     
     
@@ -166,32 +170,33 @@ serverEvolucao<- function(id, dir_data, db_emprendedoras, periodo = "Semana") {
     })
     
     
-   
+    
     
     
     
     
     #Plot the data -----------------------------------------------------------------
-    output$plot <- renderPlot({
+    output$plot <- renderPlotly({
       
       
       base_plot <- data_evolucao_perc() %>%
         ggplot(aes(x = periodo,
                    y = value,
                    color = target,
-                   group = target
-                   )
-                   
-                   
-        ) +
-          geom_point() +
+                   group = target,
+                   label = Participantes
+        )
         
-        geom_line(size = 2)
+        
+        ) +
+        geom_point() +
+        
+        geom_line(size = 1)
       
-                
+      
       
       #if it is a facet
-      if(cuantos_names() ==8){
+      if(cuantos_names() ==9){
         
         plot <- base_plot +
           facet_wrap(~ facet)
@@ -202,36 +207,41 @@ serverEvolucao<- function(id, dir_data, db_emprendedoras, periodo = "Semana") {
         plot <- base_plot 
       }
       
-   
       
-      plot +
+      
+      final_plot <- plot +
         expand_limits(y = 0) +
         #scale_fill_manual(values = palette)+
         labs(
           y = "Taxa de participacao (%)",
-          x = ""
+          x = periodo
         ) +
         theme_realiza() +
-        scale_color_manual(values = c(palette)) +
+        scale_color_manual(values = c(palette),
+                           name = "") +
         scale_y_continuous(labels = function(x){x*100})
-     
+      
+      
+      ggplotly(final_plot,
+               tooltip = c("label")) %>% 
+        config(displayModeBar = F)
       
     })
     
     
-   text_header <- reactive({
-     
-     if(input$indicador == "bm"){
-       
-      text = "listas do Banco Mundial" 
-       
-     } else {
-       
-       text = "listas das emprendedoras interesadas en participar" 
-     }
-     
-     text
-   })
+    text_header <- reactive({
+      
+      if(input$indicador == "bm"){
+        
+        text = "listas do Banco Mundial" 
+        
+      } else {
+        
+        text = "listas das emprendedoras interesadas en participar" 
+      }
+      
+      text
+    })
     
     
     output$header <- renderUI({

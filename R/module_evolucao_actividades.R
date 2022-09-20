@@ -48,7 +48,7 @@ ui_evolucao_actividades <- function(id, periodo = "Semana"){
       ),
       mainPanel(
         uiOutput(NS(id,"header")),
-        withSpinner(plotOutput(NS(id,"plot")))
+        withSpinner(plotlyOutput(NS(id,"plot")))
         
       )
     )
@@ -131,6 +131,10 @@ serverEvolucaoActividades<- function(id, dir_data, db_emprendedoras, periodo = "
     data_evolucao <- reactive({
       
       create_data_evolucao_actividades(presencas(), input$by) %>%
+        mutate(Presencias = glue("{presente}
+                                  Esperadas: {esperadas}
+                                 Taxa de participacao: {paste0(round(taxa*100,1),'%')}"
+                                    )) %>%
         filter(actividade_label %in% checked_indicators())
       
     })
@@ -155,26 +159,27 @@ serverEvolucaoActividades<- function(id, dir_data, db_emprendedoras, periodo = "
     
     
     #Plot the data -----------------------------------------------------------------
-    output$plot <- renderPlot({
+    output$plot <- renderPlotly({
       
       
       base_plot <- data_evolucao() %>%
         ggplot(aes(x = periodo,
                    y = taxa,
                    color = actividade_label,
-                   group = actividade_label
+                   group = actividade_label,
+                   label = Presencias
         )
         
         
         ) +
         geom_point() +
         
-        geom_line(size = 2)
+        geom_line(size = 1)
       
       
       
       #if it is a facet
-      if(cuantos_names() ==4){
+      if(cuantos_names() ==7){
         
         plot <- base_plot +
           facet_wrap(~ facet)
@@ -187,7 +192,7 @@ serverEvolucaoActividades<- function(id, dir_data, db_emprendedoras, periodo = "
       
       
       
-      plot +
+      final_plot <- plot +
         expand_limits(y = 0) +
         #scale_fill_manual(values = palette)+
         labs(
@@ -195,9 +200,14 @@ serverEvolucaoActividades<- function(id, dir_data, db_emprendedoras, periodo = "
           x = ""
         ) +
         theme_realiza() +
-        scale_color_manual(values = c(palette)) +
+        scale_color_manual(values = c(palette),
+                           name = "") +
         scale_y_continuous(labels = function(x){x*100})
       
+      
+      ggplotly(final_plot,
+               tooltip = "label") %>%
+        config(displayModeBar = F)
       
     })
     

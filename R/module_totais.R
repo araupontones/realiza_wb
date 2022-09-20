@@ -75,18 +75,18 @@ serverTotals<- function(id, dir_data) {
       group_by(Componente, Cidade) %>%
       ##Count total in WB data, Confirmadas, and those who attended the first session
       summarise(`Nas Listas BM` = n(),
-                `Interesadas em atender` = sum(status_realiza == "CONFIRMADA", na.rm = T),
+                `Interesadas em participar` = sum(status_realiza == "CONFIRMADA", na.rm = T),
                 `Veio sessao inaugural` = sum(!is.na(Status)),
-                `Veio primera sessao` = sum(!is.na(Status_primera)),
+                `Veio na primeira sessão` = sum(!is.na(Status_primera)),
                 .groups = 'drop'
       ) %>%
       pivot_longer(-c(Componente, Cidade),
                    names_to = "Status") %>%
       mutate(Status = factor(Status,
                              levels = c("Nas Listas BM",
-                                        "Interesadas em atender",
+                                        "Interesadas em participar",
                                         "Veio sessao inaugural",
-                                        "Veio primera sessao"
+                                        "Veio na primeira sessão"
                              )))
     
     

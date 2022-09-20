@@ -13,6 +13,8 @@ create_data_evolucao_actividades <- function(presencas, by){
     db <- presencas %>%
       group_by(actividade_label,periodo) %>%
       summarise(taxa = mean(presente),
+                esperadas = n(),
+                presente = sum(presente),
                 .groups = 'drop')
     
     
@@ -21,6 +23,8 @@ create_data_evolucao_actividades <- function(presencas, by){
     db <- presencas %>%
       group_by(Cidade, actividade_label, periodo) %>%
       summarise(taxa = mean(presente),
+                esperadas = n(),
+                presente = sum(presente),
                 .groups = 'drop') %>%
       rename(facet = Cidade)
     
@@ -32,6 +36,8 @@ create_data_evolucao_actividades <- function(presencas, by){
     db <-  presencas %>%
       group_by(Componente, actividade_label, periodo) %>%
       summarise(taxa = mean(presente),
+                esperadas = n(),
+                presente = sum(presente),
                 .groups = 'drop') %>%
       rename(facet = Componente)
     
