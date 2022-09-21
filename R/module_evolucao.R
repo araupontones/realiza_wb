@@ -219,7 +219,9 @@ serverEvolucao<- function(id, dir_data, db_emprendedoras, periodo = "Semana") {
         theme_realiza() +
         scale_color_manual(values = c(palette),
                            name = "") +
-        scale_y_continuous(labels = function(x){x*100})
+        scale_y_continuous(labels = function(x){x*100},
+                           limits = c(0,1.2)
+                           )
       
       
       ggplotly(final_plot,

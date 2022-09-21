@@ -41,10 +41,10 @@ ui_evolucao_actividades <- function(id, periodo = "Semana"){
                                label = h4("Números da operação por:"),
                                choices = selections_semana
                                
-                   ),
-                   checkboxGroupInput(NS(id,"checkGroup"), label = h4("Select an actividade"), 
-                                      choices = list("Modulos" = 1, "Choice 2" = 2, "Choice 3" = 3),
-                                      selected = 1)
+                   )
+                   # checkboxGroupInput(NS(id,"checkGroup"), label = h4("Select an actividade"), 
+                   #                    choices = list("Modulos" = 1, "Choice 2" = 2, "Choice 3" = 3),
+                   #                    selected = 1)
       ),
       mainPanel(
         uiOutput(NS(id,"header")),
@@ -74,11 +74,12 @@ serverEvolucaoActividades<- function(id, dir_data, db_emprendedoras, periodo = "
       #create data of presencas
       #imports clean/all_presencas.rds
       #keeps all status(Presente, Ausente y Pendente), creates month, names all modulos as modulos obligatorios
-      presencas <- create_data_presencas(dir_lookups, dir_data, c("Presente", "Ausente", "Pendente") )
+      presencas <- create_data_presencas(dir_lookups, dir_data, c("Presente", "Ausente", "Pendente"))
       
       #define periodo
       #renmaes the variable week or month as periodo so it can be aggregated later
-      presencas <- define_var_periodo(presencas, periodo)
+      presencas <- define_var_periodo(presencas, periodo) %>%
+        filter(actividade_label == "Modulos")
       
       presencas
       
@@ -116,30 +117,31 @@ serverEvolucaoActividades<- function(id, dir_data, db_emprendedoras, periodo = "
     #get presencas over period -----------------------------------------------------
     
     
-    checked_indicators <- reactive({
-      
-      checked <- as.numeric(input$checkGroup)
-      
-      
-      labels()[checked]
-      
-      
-    })
-    
-    
-    
+    # checked_indicators <- reactive({
+    #   
+    #   checked <- as.numeric(input$checkGroup)
+    #   
+    #   
+    #   labels()[checked]
+    #   
+    #   
+    # })
+    # 
+    # 
+
     data_evolucao <- reactive({
-      
+
       create_data_evolucao_actividades(presencas(), input$by) %>%
         mutate(Presencias = glue("{presente}
                                   Esperadas: {esperadas}
                                  Taxa de participacao: {paste0(round(taxa*100,1),'%')}"
-                                    )) %>%
-        filter(actividade_label %in% checked_indicators())
-      
+                                    )) 
+      #%>%
+       # filter(actividade_label %in% checked_indicators())
+
     })
-    
-    
+
+
     
     
     
@@ -165,7 +167,7 @@ serverEvolucaoActividades<- function(id, dir_data, db_emprendedoras, periodo = "
       base_plot <- data_evolucao() %>%
         ggplot(aes(x = periodo,
                    y = taxa,
-                   color = actividade_label,
+                   #color = facet,
                    group = actividade_label,
                    label = Presencias
         )
@@ -202,12 +204,14 @@ serverEvolucaoActividades<- function(id, dir_data, db_emprendedoras, periodo = "
         theme_realiza() +
         scale_color_manual(values = c(palette),
                            name = "") +
-        scale_y_continuous(labels = function(x){x*100})
+        scale_y_continuous(labels = function(x){x*100},
+                           limits = c(0,1,1.1)
+                           )
       
       
       ggplotly(final_plot,
                tooltip = "label") %>%
-        config(displayModeBar = F)
+        config(displayModeBar = F) 
       
     })
     

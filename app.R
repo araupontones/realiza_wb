@@ -58,6 +58,14 @@ ui <- fluidPage(
                
                
              ),
+             navbarMenu("Progresso",
+                        tabPanel("FNM",
+                                 ui_progress_fnm("fnm")
+                                 ),
+                        tabPanel("SGR",
+                                 ui_progress_sgr("sgr"))
+                        
+                        ),
              
              navbarMenu("Participação Actividades",
                         
@@ -114,25 +122,7 @@ server <- function(input, output, session) {
   
   
   #server summary ================================================================
-  
-  
-  #Semanal ------------------------------------------------------------------
-  
-  
-  
-  #Monthly --------------------------------------------------------------------
-  
-  
-  #serverOverview("overview", dir_data)
-  
-  
-  #Evoucao actividades ========================================================
-  
-  
-  
-  
-  #serverSummary("summary", dir_data)
-  
+ 
   
   #Activate the servers of each gropu when the tab is selected
   #For this to work the name id of the uis and values of panel should be consisten
@@ -173,7 +163,15 @@ server <- function(input, output, session) {
       
       serverEvolucaoActividades("evolucao_mensal_act", dir_data, emprendedoras, periodo = "Mes")
       
+    } else if(activo == "FNM"){
+      serverProgressFNM("fnm", dir_data, emprendedoras)
+      
+    } else if(activo == "SGR"){
+      
+      serverProgressSGR("sgr", dir_data, emprendedoras)
+      
     }
+    
     
   })
   
