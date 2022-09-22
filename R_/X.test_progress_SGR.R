@@ -1,6 +1,5 @@
 gmdacr::load_functions("R")
 
-gmdacr::load_functions("R")
 dir_master <- define_dir_master()
 dir_data <- file.path(dir_master,"data")
 dir_lookups <- file.path(dir_data,"0look_ups")

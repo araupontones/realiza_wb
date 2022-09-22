@@ -42,36 +42,39 @@ ui_totals <- function(id){
 serverTotals<- function(id, dir_data) {
   moduleServer(id, function(input, output, session) {
     
-    #prepare data -----------------------------------------------------------------
+    
     ## read look up of emprendedoras
     emprendedoras <- import(file.path(dir_data,"0look_ups/emprendedoras.rds"))
-    presencas <- import(file.path(dir_data,"1.zoho/3.clean/all_presencas.rds"))
+    presencas <- import(file.path(dir_data,"1.zoho/3.clean/all_presencas.rds")) %>%
+      filter(Status == "Presente")
+    
+    
+    
     
     ##identify emprendedoras that attended to the first session
     inaugural<-  presencas %>% 
-      filter(actividade =="Sessão Inaugural" & Status == "Presente") %>%
-      select(Emprendedora, Status)
+      filter(actividade =="Sessão Inaugural") %>%
+      select(ID_BM, Status)
     
     
     ##identify emprendedoras that attended to the primera sessao
     primera<- presencas %>%
-      group_by(Emprendedora) %>%
+      group_by(ID_BM) %>%
       filter(data_posix == min(data_posix)) %>%
+      slice(1) %>%
       ungroup() %>%
       mutate(actividade = "Primera sessao") %>%
-      filter(Status == "Presente") %>%
-      select(Emprendedora, Status_primera = Status)
-    
+      select(ID_BM, Status_primera = Status)
     
     
     
     ## Join lookup of emprendedoras with peresencas of first session
     data_totais <- emprendedoras %>%
-      select(Emprendedora, Cidade, 
+      select(ID_BM, Cidade, 
              Componente = grupo_accronym,
              status_realiza) %>%
-      left_join(inaugural, by = "Emprendedora") %>%
-      left_join(primera, by = "Emprendedora") %>%
+      left_join(inaugural, by = "ID_BM") %>%
+      left_join(primera, by = "ID_BM") %>%
       group_by(Componente, Cidade) %>%
       ##Count total in WB data, Confirmadas, and those who attended the first session
       summarise(`Nas Listas BM` = n(),
