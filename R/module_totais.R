@@ -79,8 +79,9 @@ serverTotals<- function(id, dir_data) {
       ##Count total in WB data, Confirmadas, and those who attended the first session
       summarise(`Nas Listas BM` = n(),
                 `Interesadas em participar` = sum(status_realiza == "CONFIRMADA", na.rm = T),
+                `Tem participado` = sum(!is.na(Status_primera)),
                 `Veio sessao inaugural` = sum(!is.na(Status)),
-                `Veio na primeira sessão` = sum(!is.na(Status_primera)),
+                
                 .groups = 'drop'
       ) %>%
       pivot_longer(-c(Componente, Cidade),
@@ -88,8 +89,9 @@ serverTotals<- function(id, dir_data) {
       mutate(Status = factor(Status,
                              levels = c("Nas Listas BM",
                                         "Interesadas em participar",
-                                        "Veio sessao inaugural",
-                                        "Veio na primeira sessão"
+                                        "Tem participado",
+                                        "Veio sessao inaugural"
+                                       
                              )))
     
     
@@ -124,11 +126,30 @@ serverTotals<- function(id, dir_data) {
     
     output$header <- renderUI({
       
-      HTML(
-        glue("<h5>Os gráficos mostram os números de operação das 
-             emprendedoras. </h5>")
-        
+      tags$div(
+        p("O Banco Mundial compartilhou uma lista com informações sobre mulheres que foram
+esperado para participar do programa. Com essas informações, a equipe MUVA
+entrei em contato com todas as mulheres para confirmar que ainda estavam interessadas em participar.
+"),
+br("O gráfico a seguir mostra:"),
+tags$ul(
+  
+  tags$li("Total de mulheres incluídas nas listas do banco mundial,"),
+  tags$li("Total de mulheres que confirmaram à equipe MUVA que ainda estavam interessadas em participar,"),
+  tags$li("Total de mulheres que participaram de qualquer atividade do programa",),
+  tags$li("Total de mulheres que participaram da sessão inaugural.")
+  
+)
+
+
+
+
+
       )
+      
+      
+      
+      
     })
     
     output$plot <- renderPlot({

@@ -1,4 +1,4 @@
-
+library(DT)
 
 selections_semana <- setNames(
   #values
@@ -24,7 +24,7 @@ selections_semana <- setNames(
 
 #UI ===========================================================================
 #'@param periodo c("Semana", "Mes") it defines the labels of the selectors
-ui_progress_fnm <- function(id){
+ui_metas_fnm <- function(id){
   
   
   tagList(
@@ -45,7 +45,18 @@ ui_progress_fnm <- function(id){
             
       ),
       mainPanel(
+        p("Para cada tipo de atividade de FNM, espera-se que cada mulher compareça a um número de sessões obrigatórias.
+          O número de sessões obrigatórias que as mulheres devem participar para cada atividade é o seguinte"),
+     
+        
+        DT::DTOutput(NS(id,"table_actividades")),
+        
+        br(),br(),
+        
         uiOutput(NS(id,"header")),
+        
+        br(),
+        
         withSpinner(plotlyOutput(NS(id,"plot")), color = "black")
         
       )
@@ -59,7 +70,7 @@ ui_progress_fnm <- function(id){
 #Server ======================================================================
 
 #'@param periodo c("Semana", "Mes") defines whether to aggregate by semana or by mes
-serverProgressFNM<- function(id, dir_data, db_emprendedoras) {
+serverMetasFNM<- function(id, dir_data, db_emprendedoras) {
   moduleServer(id, function(input, output, session) {
     
     #define palete for chart ----------------------------------------------------
@@ -86,6 +97,20 @@ serverProgressFNM<- function(id, dir_data, db_emprendedoras) {
       distinct()
     
     
+    output$table_actividades <- DT::renderDataTable({
+      
+      datatable(
+        actividades %>%
+          rename(
+            Actividade = actividade,
+            `Sessoes obrigatórias`= sessoes
+            
+          ),
+        rownames = F,
+        options = list(dom = 't')
+      ) 
+      
+    })
     
     
     
@@ -196,11 +221,11 @@ serverProgressFNM<- function(id, dir_data, db_emprendedoras) {
         geom_col() +
         geom_vline(xintercept = .5)+
         labs(y = "",
-             x = "(%) Proportion of emprendedoras")+
+             x = "Proporção de emprendedoras")+
         scale_fill_manual(values = c(gray, lesHalf, moreHalf, completed),
                           breaks = categories(),
                           name = "") +
-        scale_x_continuous(labels = function(x){x*100},
+        scale_x_continuous(labels = function(x){paste0(x*100, "%")},
                            position = "top"
                            ) +
         guides(fill = guide_legend(nrow = 2)) +
@@ -234,13 +259,11 @@ serverProgressFNM<- function(id, dir_data, db_emprendedoras) {
     output$header <- renderUI({
       
       HTML(
-        glue("<h5>
-             Para cada tipo de atividade de FNM, espera-se que cada mulher 
-             compareça a um número de sessões obrigatórias. O gráfico mostra 
-             a percentagem de mulheres que participaram em menos de metade das
-             sessões obrigatórias, em mais de metade e em todas as sessões.<br>
-             <br>
-             Os gráficos mostram a proporção de mulheres <b> em relação às {text_header()}</b>. </h5>")
+        glue("<p>
+           O gráfico mostra a percentagem de mulheres que participaram em menos de metade das
+             sessões obrigatórias, em mais de metade e em todas as sessões obrigatórias.
+           <b> em relação às {text_header()}</b>. </p>"
+           )
         
       )
     })

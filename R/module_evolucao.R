@@ -213,13 +213,13 @@ serverEvolucao<- function(id, dir_data, db_emprendedoras, periodo = "Semana") {
         expand_limits(y = 0) +
         #scale_fill_manual(values = palette)+
         labs(
-          y = "Taxa de participacao (%)",
+          y = "Taxa de participacao",
           x = periodo
         ) +
         theme_realiza() +
         scale_color_manual(values = c(palette),
                            name = "") +
-        scale_y_continuous(labels = function(x){x*100},
+        scale_y_continuous(labels = function(x){paste0(x*100, "%")},
                            limits = c(0,1.2)
                            )
       
@@ -249,7 +249,17 @@ serverEvolucao<- function(id, dir_data, db_emprendedoras, periodo = "Semana") {
     output$header <- renderUI({
       
       HTML(
-        glue("<h5>Os gráficos mostram a proporção de mulheres empreendedoras que participaram do programa em <b>relação às {text_header()}</b>. </h5>")
+        
+        glue("
+            <p>
+             Para conhecer o nível de participação, o número de mulheres 
+             que participaram <b>em cada {periodo}</b> desde o início do programa 
+             é monitorado.
+             </p>
+             <p>Os gráficos mostram a proporção de mulheres empreendedoras 
+             que participaram do programa durante cada {periodo} em <b>relação às {text_header()}
+             </b>. 
+             </p>")
         
       )
     })

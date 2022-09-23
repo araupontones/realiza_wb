@@ -21,34 +21,46 @@ ui <- fluidPage(
              
              
              #Numeros totais ===================================================
-             tabPanel("Números totais",
+             tabPanel("Participantes",
                       ui_totals("Totals")
              ),
+             
+             navbarMenu("Metas",
+                        tabPanel("FNM",
+                                 ui_metas_fnm("fnm")
+                        ),
+                        tabPanel("SGR",
+                                 ui_metas_sgr("sgr"))
+                        
+             ),
+             
              navbarMenu(
-               "Participação",
+               "Evolução de Participação",
                
                #Semanal --------------------------------------------------------
                "Semanal",
-               tabPanel("Essa Semana",
-                        ui_essa_semana("essa_samana", "Semana")
-                        
-               ),
                tabPanel( 
                  "Evolução semanal",
                  ui_evolucao("evolucao_semanal", "Semana")
                ),
+               tabPanel("Essa Semana",
+                        ui_essa_semana("essa_samana", "Semana")
+                        
+               ),
+              
                
                
                #mensal ----------------------------------------------------------
                "Mensal",
+               tabPanel( "Evolução mensual",
+                         ui_evolucao("evolucao_mensal", "Mes")
+               ),
                tabPanel("Esse Mes",
                         ui_essa_semana("esse_mes", "Mes")
                         
-               ),
-               
-               tabPanel( "Evolução mensual",
-                         ui_evolucao("evolucao_mensal", "Mes")
                )
+               
+              
                
                
                # tabPanel("Presencas",
@@ -57,24 +69,17 @@ ui <- fluidPage(
                #)
                
                
-             ),
-             navbarMenu("Progresso",
-                        tabPanel("FNM",
-                                 ui_progress_fnm("fnm")
-                                 ),
-                        tabPanel("SGR",
-                                 ui_progress_sgr("sgr"))
-                        
-                        ),
-             
-             navbarMenu("Participação Actividades",
-                        
-                        tabPanel("Semanal",
-                                 ui_evolucao_actividades("evolucao_semanal_act", "Semana")),
-                        tabPanel("Mensal",
-                                 ui_evolucao_actividades("evolucao_mensal_act", "Mes"))
-                        
              )
+            
+             
+             # navbarMenu("Participação Actividades",
+             #            
+             #            tabPanel("Semanal",
+             #                     ui_evolucao_actividades("evolucao_semanal_act", "Semana")),
+             #            tabPanel("Mensal",
+             #                     ui_evolucao_actividades("evolucao_mensal_act", "Mes"))
+             #            
+             # )
              # panels_FNM("FNM"),
              # 
              # panels_SGR("SGR"),
@@ -135,7 +140,7 @@ server <- function(input, output, session) {
     print(input$Paneles)
     activo <- input$Paneles
     
-    if(activo == "Números totais") {
+    if(activo == "Participantes") {
       
       serverTotals("Totals", dir_data)
       
@@ -164,11 +169,11 @@ server <- function(input, output, session) {
       serverEvolucaoActividades("evolucao_mensal_act", dir_data, emprendedoras, periodo = "Mes")
       
     } else if(activo == "FNM"){
-      serverProgressFNM("fnm", dir_data, emprendedoras)
+      serverMetasFNM("fnm", dir_data, emprendedoras)
       
     } else if(activo == "SGR"){
       
-      serverProgressSGR("sgr", dir_data, emprendedoras)
+      serverMetasSGR("sgr", dir_data, emprendedoras)
       
     }
     

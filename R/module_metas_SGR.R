@@ -24,7 +24,7 @@ selections_semana <- setNames(
 
 #UI ===========================================================================
 #'@param periodo c("Semana", "Mes") it defines the labels of the selectors
-ui_progress_sgr <- function(id){
+ui_metas_sgr <- function(id){
   
   
   tagList(
@@ -54,7 +54,7 @@ ui_progress_sgr <- function(id){
 #Server ======================================================================
 
 #'@param periodo c("Semana", "Mes") defines whether to aggregate by semana or by mes
-serverProgressSGR<- function(id, dir_data, db_emprendedoras) {
+serverMetasSGR<- function(id, dir_data, db_emprendedoras) {
   moduleServer(id, function(input, output, session) {
     
  
@@ -139,7 +139,7 @@ serverProgressSGR<- function(id, dir_data, db_emprendedoras) {
         scale_fill_manual(values = palette,
                           name = "") +
         labs(y = "Mulheres",
-             x = "Módulos concluídos")+
+             x = "Sessões concluídas")+
         theme_realiza() +
         theme(legend.text = element_text(size = 8),
               axis.text.y = element_text(hjust = 0),
@@ -164,12 +164,13 @@ serverProgressSGR<- function(id, dir_data, db_emprendedoras) {
     output$header <- renderUI({
       
       HTML(
-        glue("<h5>
-            A meta é que as mulheres participantes do SGR concluam pelo menos 80% 
-            dos 12 módulos oferecidos pelo programa.<br><br>
-            O gráfico mostra o número de mulheres que completaram um certo 
-            número de módulos. A linha preta indica o objetivo da participação.
-            </b> </h5>")
+        glue("<p>
+            O SGR foi concebido para as mulheres participarem em 3 módulos de formação. 
+            Cada módulo é dividido em 4 sessões, perfazendo um total de 12 sessões. 
+            <b>O objetivo é que cada mulher complete pelo menos 10 sessões das 12 facilitadas</b>;</p>
+            <p>O gráfico mostra o número de mulheres que completaram um certo 
+            número de sessões. A linha preta indica o objetivo da participação.
+            </p>")
         
       )
     })
