@@ -103,7 +103,7 @@ serverParticipacaoSGR<- function(id, dir_data, db_emprendedoras, periodo = "Sema
 
     data_evolucao <- reactive({
 
-      create_data_participacao_SGR(presencas(), emprendedoras,input$by) %>%
+      create_data_participacao_SGR(presencas(), db_emprendedoras,input$by) %>%
         mutate(Presencias = glue("{mulheres}
                                  de {total} nas listas de BM"
     

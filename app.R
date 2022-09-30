@@ -137,7 +137,7 @@ server <- function(input, output, session) {
   #For this to work the name id of the uis and values of panel should be consisten
   #See consistency in panels_FNM.R | Panels_SGR.R | Panels_SGR_FNM.R
 
-  serverParticipacaoSGR("part_sgr", dir_data, emprendedoras, periodo = "Semana" )
+  serverParticipacaoSGR("part_sgr", dir_data, db_emprendedoras = emprendedoras, periodo = "Semana" )
   
   observe({
     

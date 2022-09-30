@@ -37,7 +37,7 @@ create_data_participacao_SGR <- function(db_sgr,db_emprendedoras, by){
   if(by == "Seu todo"){
     
     #count total women in listas
-    totais <- create_data_totais(filter(db_emprendedoras, grupo_accronym != "FNM"), by)
+    totais <- create_data_totais(dplyr::filter(db_emprendedoras, grupo_accronym != "FNM"), by)
     
     #count women in different ranges of progress
     data_comp <- db_sgr %>%
