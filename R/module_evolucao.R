@@ -10,19 +10,19 @@ selections_semana <- setNames(
   #values
   c("Seu todo" ,
     "Por Cidade", 
-    "Por Componente", 
-    "Por Cidade e Componente"
+    "Por Abordagem", 
+    "Por Cidade e Abordagem"
     #"Por Actividade no seu todo", 
-    #"Por Actividade por Componente",  
+    #"Por Actividade por Abordagem",  
     #"Por actividade por cidade" 
   ),
   #labels
   c("Seu todo" ,
     "Por Cidade", 
-    "Por Componente", 
-    "Por Cidade e Componente"
+    "Por Abordagem", 
+    "Por Cidade e Abordagem"
     #"Por Actividade no seu todo", 
-    #"Por Actividade por Componente",  
+    #"Por Actividade por Abordagem",  
     #"Por actividade por cidade" 
   )
   
@@ -103,7 +103,7 @@ serverEvolucao<- function(id, dir_data, db_emprendedoras, periodo = "Semana") {
       
     })
     
-    #get figures of total emprendedoras by Cidade, componente, or both -------------
+    #get figures of total emprendedoras by Cidade, Abordagem, or both -------------
     #this is used to plot and compare participation against targets
     #it creates a dataset with three names:
     #target (or grouping variable)

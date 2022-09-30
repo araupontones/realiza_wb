@@ -29,7 +29,7 @@ selections_semana <- setNames(
 
 #UI ===========================================================================
 #'@param periodo c("Semana", "Mes") it defines the labels of the selectors
-ui_evolucao_actividades <- function(id, periodo = "Semana"){
+ui_participacaoSGR <- function(id, periodo = "Semana"){
   
   
   tagList(
@@ -48,7 +48,10 @@ ui_evolucao_actividades <- function(id, periodo = "Semana"){
       ),
       mainPanel(
         uiOutput(NS(id,"header")),
-        withSpinner(plotlyOutput(NS(id,"plot")), color = "black")
+        withSpinner(
+          plotlyOutput(NS(id,"plot"),
+                       height = "600px")
+          , color = "black")
         
       )
     )
@@ -61,7 +64,7 @@ ui_evolucao_actividades <- function(id, periodo = "Semana"){
 #Server ======================================================================
 
 #'@param periodo c("Semana", "Mes") defines whether to aggregate by semana or by mes
-serverEvolucaoActividades<- function(id, dir_data, db_emprendedoras, periodo = "Semana") {
+serverParticipacaoSGR<- function(id, dir_data, db_emprendedoras, periodo = "Semana") {
   moduleServer(id, function(input, output, session) {
     
     
@@ -74,13 +77,12 @@ serverEvolucaoActividades<- function(id, dir_data, db_emprendedoras, periodo = "
       #create data of presencas
       #imports clean/all_presencas.rds
       #keeps all status(Presente, Ausente y Pendente), creates month, names all modulos as modulos obligatorios
-      presencas <- create_data_presencas(dir_lookups, dir_data, c("Presente", "Ausente", "Pendente"))
       
-      #define periodo
-      #renmaes the variable week or month as periodo so it can be aggregated later
-      presencas <- define_var_periodo(presencas, periodo) %>%
-        filter(actividade_label == "Modulos")
+      presencas <- create_data_presencas(dir_lookups, dir_data, c("Presente")) %>%
+        dplyr::filter(actividade_label == "Modulos Obligatorios") %>%
+        mutate(mulheres = 1)
       
+  
       presencas
       
     })
@@ -90,52 +92,26 @@ serverEvolucaoActividades<- function(id, dir_data, db_emprendedoras, periodo = "
     
     labels <- reactive({
       
-      unique(presencas()$actividade_label)
+      unique(presencas()$actividade)
     })
     
-    checkboxGroupInput
-    observe({
-      
-      #vector with all activities
-      labels <- unique(presencas()$actividade_label)
-      
-      #define values for choices
-      choices <- lapply(seq(1:length(labels())), function(x){x})
-      #assing labels to choices
-      
-      names(choices) <- labels()
-      
-      updateCheckboxGroupInput(session, "checkGroup", 
-                               choices = choices,
-                               selected = choices)
-      
-    })
+   
     
     
     
-    
-    #get presencas over period -----------------------------------------------------
-    
-    
-    # checked_indicators <- reactive({
-    #   
-    #   checked <- as.numeric(input$checkGroup)
-    #   
-    #   
-    #   labels()[checked]
-    #   
-    #   
-    # })
-    # 
-    # 
+ 
 
     data_evolucao <- reactive({
 
-      create_data_evolucao_actividades(presencas(), input$by) %>%
-        mutate(Presencias = glue("{presente}
-                                  Esperadas: {esperadas}
-                                 Taxa de participacao: {paste0(round(taxa*100,1),'%')}"
-                                    )) 
+      create_data_participacao_SGR(presencas(), emprendedoras,input$by) %>%
+        mutate(Presencias = glue("{mulheres}
+                                 de {total} nas listas de BM"
+    
+                                 
+                                 )
+                
+               
+               ) 
       #%>%
        # filter(actividade_label %in% checked_indicators())
 
@@ -149,65 +125,92 @@ serverEvolucaoActividades<- function(id, dir_data, db_emprendedoras, periodo = "
     # Identify the number of variables in the data----------------------------------
     # if there are 3 it is because it was grouped by 2 variables
     
-    cuantos_names <- reactive({
+    facet_it <- reactive({
       
-      length(names(data_evolucao()))
+     input$by != "Seu todo"
     })
     
     
     
-    
+    data_horizontal <- reactive({
+      
+      data_evolucao() %>%
+        group_by(target) %>%
+        summarise(total = max(total),
+                  Presencias  = max(total)) %>%
+        ungroup()
+      
+    })
     
     
     
     #Plot the data -----------------------------------------------------------------
     output$plot <- renderPlotly({
       
+      print(names(data_evolucao()))
+     
       
       base_plot <- data_evolucao() %>%
-        ggplot(aes(x = periodo,
-                   y = taxa,
-                   #color = facet,
-                   group = actividade_label,
+        ggplot(aes(x = actividade,
+                   y = mulheres,
+                   fill = target,
                    label = Presencias
         )
         
         
         ) +
-        geom_point() +
-        
-        geom_line(size = 1)
+        geom_col() +
+        geom_hline(data = data_horizontal(),
+                   aes(yintercept  = total,
+                      
+                       )
+        ) 
       
       
-      
-      #if it is a facet
-      if(cuantos_names() ==7){
+      if(facet_it()){
         
-        plot <- base_plot +
-          facet_wrap(~ facet)
-        
-        #elese
-      } else {
-        
-        plot <- base_plot 
+        base_plot <- base_plot +
+          facet_wrap(~ target)
       }
       
-      
-      
-      final_plot <- plot +
-        expand_limits(y = 0) +
-        #scale_fill_manual(values = palette)+
-        labs(
-          y = "Taxa de participacao (%)",
-          x = periodo
-        ) +
+      final_plot <- base_plot +
+          labs(
+            y = "Numero de mulheres",
+            x = ""
+          ) +
         theme_realiza() +
-        scale_color_manual(values = c(palette),
-                           name = "") +
-        scale_y_continuous(labels = function(x){x*100},
-                           limits = c(0,1,1.1)
-                           )
+        theme(axis.text.x = element_text(angle = 90,
+                                         size = 10),
+              axis.text.y = element_text(size = 12)) +
+        scale_fill_manual(name = "",
+                          values = palette)
+        
       
+      # 
+      # #if it is a facet
+      # if(cuantos_names() ==9){
+      #   
+      #   plot <- base_plot +
+      #     facet_wrap(~ facet)
+      #   
+      #   #elese
+      # } else {
+      #   
+      #   plot <- base_plot 
+      # }
+      # 
+      # 
+      # 
+      # final_plot <- plot +
+      #   expand_limits(y = 0) +
+      #   #scale_fill_manual(values = palette)+
+     
+      #   scale_color_manual(values = c(palette),
+      #                      name = "") +
+      #   # scale_y_continuous(labels = function(x){x*100},
+      #   #                    limits = c(0,1,1.1)
+      #   #                    )
+      # 
       
       ggplotly(final_plot,
                tooltip = "label") %>%
@@ -221,7 +224,7 @@ serverEvolucaoActividades<- function(id, dir_data, db_emprendedoras, periodo = "
     output$header <- renderUI({
       
       HTML(
-        glue("<h5>Os gráficos mostram a taxa de participação nas atividades <b>em relação às mulheres esperadas em cada atividade.</b> </h5>")
+        glue("<h5>que participaram de cada sessão. A linha preta indica o número de mulheres incluídas nas listas do Banco Mundial. </h5>")
         
       )
     })

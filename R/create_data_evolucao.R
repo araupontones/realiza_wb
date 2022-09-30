@@ -34,30 +34,30 @@ create_data_evolucao <- function(presencas, by){
     
     
     
-  } else if (by == "Por Componente"){
+  } else if (by == "Por Abordagem"){
     
     db <- presencas %>%
-      group_by(Emprendedora,Componente , periodo) %>%
+      group_by(Emprendedora,Abordagem , periodo) %>%
       slice(1) %>%
       ungroup() %>%
-      group_by(Componente, periodo) %>%
+      group_by(Abordagem, periodo) %>%
       summarise(presentes = n(),
                 .groups = 'drop') %>%
-      rename(target = Componente)
+      rename(target = Abordagem)
     
     
     
     
-  } else if (by == "Por Cidade e Componente"){
+  } else if (by == "Por Cidade e Abordagem"){
     
     db <- presencas %>%
-      group_by(Emprendedora, Componente, Cidade, periodo) %>%
+      group_by(Emprendedora, Abordagem, Cidade, periodo) %>%
       slice(1) %>%
       ungroup() %>%
-      group_by(Componente, Cidade, periodo) %>%
+      group_by(Abordagem, Cidade, periodo) %>%
       summarise(presentes = n(),
                 .groups = 'drop') %>%
-      rename(target = Componente,
+      rename(target = Abordagem,
              facet = Cidade)
     
     

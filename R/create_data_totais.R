@@ -24,7 +24,7 @@ create_data_totais <- function(db_emprendedoras, by){
     
     
     
-  } else if (by == "Por Componente"){
+  } else if (by == "Por Abordagem"){
     
     db <- db_emprendedoras %>%
       group_by(grupo_accronym) %>%
@@ -36,7 +36,7 @@ create_data_totais <- function(db_emprendedoras, by){
     
     
     
-  } else if (by == "Por Cidade e Componente"){
+  } else if (by == "Por Cidade e Abordagem"){
     
     db <- db_emprendedoras %>%
       group_by(Cidade, grupo_accronym) %>%

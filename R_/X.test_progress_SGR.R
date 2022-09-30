@@ -25,9 +25,9 @@ tabyl(presencas, actividade)
 sgr <- presencas %>%
   #remove modulos (because it is SGR)
   filter(actividade == "Modulos Obligatorios",
-         Componente != "FNM") %>%
+         Abordagem != "FNM") %>%
   #Count presencas by actividade
-  group_by(ID_BM,Cidade,Componente) %>%
+  group_by(ID_BM,Cidade,Abordagem) %>%
   summarise(presente = sum(presente),
             .groups = 'drop') %>%
 mutate(completos = factor(as.character(presente),
@@ -36,7 +36,7 @@ mutate(completos = factor(as.character(presente),
                           )
        ) %>%
   #Count by cidade
-  group_by(Cidade, Componente, completos) %>%
+  group_by(Cidade, Abordagem, completos) %>%
   summarise(mulheres = n(),
             .groups = 'drop')
 
@@ -45,7 +45,7 @@ mutate(completos = factor(as.character(presente),
 #count emprendedoras por
 #by<- "Seu todo"
 by <- "Por Cidade"
-#by <- "Por Componente"
+#by <- "Por Abordagem"
 
 
 

@@ -28,7 +28,7 @@ estimate_prop <- function(.data){
 #=================================================================================
 
 
-create_data_progress_SGR <- function(db_sgr,db_emprendedoras, by){
+create_data_participacao_SGR <- function(db_sgr,db_emprendedoras, by){
 
 
   message(by)
@@ -41,7 +41,7 @@ create_data_progress_SGR <- function(db_sgr,db_emprendedoras, by){
     
     #count women in different ranges of progress
     data_comp <- db_sgr %>%
-      count_mulheres(completos) %>%
+      count_mulheres(actividade) %>%
       mutate(target = "Seu todo") %>%
       left_join(totais, by = "target") %>%
       estimate_prop() 
@@ -53,7 +53,7 @@ create_data_progress_SGR <- function(db_sgr,db_emprendedoras, by){
     totais <- create_data_totais(filter(db_emprendedoras, grupo_accronym != "FNM"), by)
     
     data_comp <- db_sgr %>%
-      count_mulheres(Cidade,completos) %>%
+      count_mulheres(Cidade,actividade) %>%
       rename(target = Cidade) %>%
       left_join(totais,  by = "target") %>%
       estimate_prop() 
@@ -63,17 +63,30 @@ create_data_progress_SGR <- function(db_sgr,db_emprendedoras, by){
     totais <- create_data_totais(filter(db_emprendedoras, grupo_accronym != "FNM"), by)
     
     data_comp <- db_sgr %>%
-      count_mulheres(Abordagem,completos) %>%
+      count_mulheres(Abordagem,actividade) %>%
       rename(target = Abordagem) %>%
-      count_mulheres(target, completos) %>%
+      count_mulheres(target, actividade) %>%
        left_join(totais, by = "target") %>%
       estimate_prop() 
     
     
   }
   
+ 
   
-  data_comp 
+  data_comp %>%
+    mutate(actividade = factor(actividade,
+                               levels = c("1.1",
+                                          "Introducao a sessao de parceiros",
+                                          "1.2", "1.3",
+                                          "2.1", "2.2", "2.3",
+                                          "Sessao intercalar de parceiros",  
+                                          "3.1", "3.2", "3.3",
+                                          "Sessao de encerramento de parceiros"
+                                          ),
+                               ordered = T
+                               
+                               ))
   
   
 }

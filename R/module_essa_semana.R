@@ -9,19 +9,19 @@ selections_semana <- setNames(
   #values
   c("Seu todo" ,
     "Por Cidade", 
-    "Por Componente", 
-    "Por Cidade e Componente",
+    "Por Abordagem", 
+    "Por Cidade e Abordagem",
     "Por Actividade no seu todo", 
-    "Por Actividade por Componente",  
+    "Por Actividade por Abordagem",  
     "Por actividade por cidade" 
   ),
   #labels
   c("Seu todo" ,
     "Por Cidade", 
-    "Por Componente", 
-    "Por Cidade e Componente",
+    "Por Abordagem", 
+    "Por Cidade e Abordagem",
     "Por Actividade no seu todo", 
-    "Por Actividade por Componente",  
+    "Por Actividade por Abordagem",  
     "Por actividade por cidade" 
   )
   
@@ -120,10 +120,10 @@ serverEssaSemana<- function(id, dir_data, db_emprendedoras, periodo = "Semana") 
       #run function create_data_week, based on the selection of the user
       data_for_this_week <- list(`Seu todo` = create_data_week(this_period(), todos = T), 
                                  `Por Cidade` = create_data_week(this_period(), F, by = Cidade),
-                                 `Por Componente` = create_data_week(this_period(), F, by = Componente),
-                                 `Por Cidade e Componente` = create_data_week(this_period(), F, by = c("Componente", "Cidade"), double_group = T),
+                                 `Por Abordagem` = create_data_week(this_period(), F, by = Abordagem),
+                                 `Por Cidade e Abordagem` = create_data_week(this_period(), F, by = c("Abordagem", "Cidade"), double_group = T),
                                  `Por Actividade no seu todo` = create_data_week(this_period(), F, by = actividade),
-                                 `Por Actividade por Componente` = create_data_week(this_period(), F, by = c("actividade", "Componente"), double_group = T), 
+                                 `Por Actividade por Abordagem` = create_data_week(this_period(), F, by = c("actividade", "Abordagem"), double_group = T), 
                                  `Por actividade por cidade` = create_data_week(this_period(), F, by = c("actividade", "Cidade"), double_group = T)
       )
       
@@ -163,7 +163,7 @@ serverEssaSemana<- function(id, dir_data, db_emprendedoras, periodo = "Semana") 
     
     
     
-#get figures of total emprendedoras by Cidade, componente, or both -------------
+#get figures of total emprendedoras by Cidade, Abordagem, or both -------------
 #this is used to plot and compare participation against targets
 #it creates a dataset with three names:
 #target (or grouping variable)
@@ -208,8 +208,8 @@ serverEssaSemana<- function(id, dir_data, db_emprendedoras, periodo = "Semana") 
         }
       
       #add targets to check if participation is higher or lower than expeceted =
-      if(input$by %in% c("Seu todo", "Por Cidade", "Por Componente",
-                         "Por Cidade e Componente" )){
+      if(input$by %in% c("Seu todo", "Por Cidade", "Por Abordagem",
+                         "Por Cidade e Abordagem" )){
         
         plot <- plot +
           geom_point(data = data_totais(),

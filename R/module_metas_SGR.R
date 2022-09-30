@@ -4,19 +4,19 @@ selections_semana <- setNames(
   #values
   c("Seu todo" ,
     "Por Cidade", 
-    "Por Componente" 
-    #"Por Cidade e Componente"
+    "Por Abordagem" 
+    #"Por Cidade e Abordagem"
     #"Por Actividade no seu todo", 
-    #"Por Actividade por Componente",  
+    #"Por Actividade por Abordagem",  
     #"Por actividade por cidade" 
   ),
   #labels
   c("Seu todo" ,
     "Por Cidade", 
-    "Por Componente" 
-    #"Por Cidade e Componente"
+    "Por Abordagem" 
+    #"Por Cidade e Abordagem"
     #"Por Actividade no seu todo", 
-    #"Por Actividade por Componente",  
+    #"Por Actividade por Abordagem",  
     #"Por actividade por cidade" 
   )
   
@@ -74,10 +74,10 @@ serverMetasSGR<- function(id, dir_data, db_emprendedoras) {
       
       presencas() %>%
         #remove modulos (because it is SGR)
-        filter(actividade == "Modulos Obligatorios",
-               Componente != "FNM") %>%
+        filter(actividade_label == "Modulos Obligatorios",
+               Abordagem != "FNM") %>%
         #Count presencas by actividade
-        group_by(ID_BM,Cidade,Componente) %>%
+        group_by(ID_BM,Cidade,Abordagem) %>%
         summarise(presente = sum(presente),
                   .groups = 'drop') %>%
         mutate(completos = factor(as.character(presente),
@@ -86,7 +86,7 @@ serverMetasSGR<- function(id, dir_data, db_emprendedoras) {
         )
         ) %>%
         #Count by cidade
-        group_by(Cidade, Componente, completos) %>%
+        group_by(Cidade, Abordagem, completos) %>%
         summarise(mulheres = n(),
                   .groups = 'drop')
       

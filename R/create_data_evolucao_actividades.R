@@ -31,15 +31,15 @@ create_data_evolucao_actividades <- function(presencas, by){
     
     
     
-  } else if (by == "Por Componente"){
+  } else if (by == "Por Abordagem"){
     
     db <-  presencas %>%
-      group_by(Componente, actividade_label, periodo) %>%
+      group_by(Abordagem, actividade_label, periodo) %>%
       summarise(taxa = mean(presente),
                 esperadas = n(),
                 presente = sum(presente),
                 .groups = 'drop') %>%
-      rename(facet = Componente)
+      rename(facet = Abordagem)
     
     
     

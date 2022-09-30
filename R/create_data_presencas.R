@@ -11,7 +11,7 @@ create_data_presencas <- function(dir_lookups, dir_data, keep = "Presente"){
     rename(actividade = Modulo)
   
   presencas <- import(file.path(dir_data,"1.zoho/3.clean/all_presencas.rds"))  %>%
-    rename(Componente = grupo_accronym) %>% 
+    rename(Abordagem = grupo_accronym) %>% 
     filter(Status %in% keep) %>%
     #Create variables for month and semana 
     mutate(week = week -29,
@@ -19,7 +19,7 @@ create_data_presencas <- function(dir_lookups, dir_data, keep = "Presente"){
     ) %>%
     #Aggregate all modulos into a single "Modulos obligatorios" gategory
     left_join(modulos, by = "actividade")  %>%
-    mutate(actividade = ifelse(is.na(actividade_label) | actividade == "Sessão Inaugural", actividade, actividade_label),
+    mutate(#actividade = ifelse(is.na(actividade_label) | actividade == "Sessão Inaugural", actividade, actividade_label),
            actividade_label = case_when(actividade == "De mulher para mulher: Conecta!" ~ "Conecta",
                                         actividade == "Eventos de matchmaking" ~ "Matchmaking",
                                         actividade == "Modulos Obligatorios" ~ "Modulos",

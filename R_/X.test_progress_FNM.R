@@ -28,9 +28,9 @@ categories <- c("Has not participated","Less than half", "More than half", "Comp
 fnm <- presencas %>%
   #remove modulos (because it is SGR)
   filter(actividade != "Modulos Obligatorios",
-         Componente != "SGR") %>%
+         Abordagem != "SGR") %>%
   #Count presencas by actividade
-  group_by(ID_BM,Cidade,Componente ,actividade) %>%
+  group_by(ID_BM,Cidade,Abordagem ,actividade) %>%
   summarise(presente = sum(presente),
             .groups = 'drop') %>%
   #join with actividades to get the number of mandatory sessions
@@ -45,7 +45,7 @@ fnm <- presencas %>%
          ) 
   ) %>%
   #Count by cidade
-  group_by(Cidade, Componente,actividade, progress) %>%
+  group_by(Cidade, Abordagem,actividade, progress) %>%
   summarise(mulheres = n(),
             .groups = 'drop')
 
@@ -54,7 +54,7 @@ fnm <- presencas %>%
 #count emprendedoras por
 #by<- "Seu todo"
 #by <- "Por Cidade"
-by <- "Por Componente"
+by <- "Por Abordagem"
 
 
 

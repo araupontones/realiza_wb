@@ -88,13 +88,13 @@ create_data_progress_FNM <- function(db_fnm, db_emprendedoras, by, cats){
       artifitial_not_attended(cats = cats,actividade,target) %>%
       artifial_mulheres()
     
-  } else if(by == "Por Componente"){
+  } else if(by == "Por Abordagem"){
     
     totais <- create_data_totais(filter(db_emprendedoras, grupo_accronym != "SGR"), by)
     
     data_comp <- db_fnm %>%
-      count_mulheres(actividade, Componente,progress) %>%
-      rename(target = Componente) %>%
+      count_mulheres(actividade, Abordagem,progress) %>%
+      rename(target = Abordagem) %>%
       count_mulheres(actividade, target, progress) %>%
        left_join(totais, by = "target") %>%
       estimate_prop()  %>%

@@ -4,19 +4,19 @@ selections_semana <- setNames(
   #values
   c("Seu todo" ,
     "Por Cidade", 
-    "Por Componente" 
-    #"Por Cidade e Componente"
+    "Por Abordagem" 
+    #"Por Cidade e Abordagem"
     #"Por Actividade no seu todo", 
-    #"Por Actividade por Componente",  
+    #"Por Actividade por Abordagem",  
     #"Por actividade por cidade" 
   ),
   #labels
   c("Seu todo" ,
     "Por Cidade", 
-    "Por Componente" 
-    #"Por Cidade e Componente"
+    "Por Abordagem" 
+    #"Por Cidade e Abordagem"
     #"Por Actividade no seu todo", 
-    #"Por Actividade por Componente",  
+    #"Por Actividade por Abordagem",  
     #"Por actividade por cidade" 
   )
   
@@ -125,10 +125,10 @@ serverMetasFNM<- function(id, dir_data, db_emprendedoras) {
       #Track progress of emprendedoras agains targets
       fnm <- presencas %>%
         #remove modulos (because it is SGR)
-        filter(actividade != "Modulos Obligatorios",
-               Componente != "SGR") %>%
+        filter(actividade_label != "Modulos Obligatorios",
+               Abordagem != "SGR") %>%
         #Count presencas by actividade
-        group_by(ID_BM,Cidade,Componente ,actividade) %>%
+        group_by(ID_BM,Cidade,Abordagem ,actividade) %>%
         summarise(presente = sum(presente),
                   .groups = 'drop') %>%
         #join with actividades to get the number of mandatory sessions
@@ -143,7 +143,7 @@ serverMetasFNM<- function(id, dir_data, db_emprendedoras) {
                ) 
         ) %>%
         #Count by cidade
-        group_by(Cidade, Componente,actividade, progress) %>%
+        group_by(Cidade, Abordagem,actividade, progress) %>%
         summarise(mulheres = n(),
                   .groups = 'drop')
       

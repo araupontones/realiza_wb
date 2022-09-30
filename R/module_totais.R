@@ -5,9 +5,9 @@ library(ggplot2)
 
 selections <- setNames(
   #values
-  c("Status", "Cidade", "Componente", "Cidade_componente"),
+  c("Status", "Cidade", "Componente", "Abordagem", "Cidade_Abordagem"),
   #labels
-  c("Seu Todo", "Por Cidade", "Por Componente", "Por Cidade e Componente")
+  c("Seu Todo", "Por Cidade", "Por Componente", "Por Abordagem", "Por Cidade e Abordagem")
   
 )
 
@@ -23,7 +23,21 @@ ui_totals <- function(id){
                                label = h4("Números da operação por:"),
                                choices = selections
                                
-                   )
+                   ),
+                   shiny::checkboxGroupInput(NS(id,"check_group"),
+                                             label = h4("Status"),
+                                             choices = list(
+                                               
+                                               "Nas Listas BM" = 1,
+                                                "Interesadas em participar" = 2,
+                                                "Tem participado" = 3,
+                                                "Veio sessao inaugural" =4 
+                                               ),
+                                             selected = c(1,2,3,4)
+                                               
+                                             )
+                                             
+                                             
       ),
       mainPanel(
         uiOutput(NS(id,"header")),
@@ -48,7 +62,8 @@ serverTotals<- function(id, dir_data) {
     presencas <- import(file.path(dir_data,"1.zoho/3.clean/all_presencas.rds")) %>%
       filter(Status == "Presente")
     
-    
+
+            
     
     
     ##identify emprendedoras that attended to the first session
@@ -71,20 +86,20 @@ serverTotals<- function(id, dir_data) {
     ## Join lookup of emprendedoras with peresencas of first session
     data_totais <- emprendedoras %>%
       select(ID_BM, Cidade, 
-             Componente = grupo_accronym,
+             Abordagem = grupo_accronym,
              status_realiza) %>%
       left_join(inaugural, by = "ID_BM") %>%
       left_join(primera, by = "ID_BM") %>%
-      group_by(Componente, Cidade) %>%
+      group_by(Abordagem, Cidade) %>%
       ##Count total in WB data, Confirmadas, and those who attended the first session
-      summarise(`Nas Listas BM` = n(),
+      summarise("Nas Listas BM" = n(),
                 `Interesadas em participar` = sum(status_realiza == "CONFIRMADA", na.rm = T),
                 `Tem participado` = sum(!is.na(Status_primera)),
                 `Veio sessao inaugural` = sum(!is.na(Status)),
                 
                 .groups = 'drop'
       ) %>%
-      pivot_longer(-c(Componente, Cidade),
+      pivot_longer(-c(Abordagem, Cidade),
                    names_to = "Status") %>%
       mutate(Status = factor(Status,
                              levels = c("Nas Listas BM",
@@ -96,16 +111,45 @@ serverTotals<- function(id, dir_data) {
     
     
     
+    status_vector <-  c("Nas Listas BM",
+                        "Interesadas em participar",
+                        "Tem participado",
+                        "Veio sessao inaugural")
+      
+      
+      
+    
+    
     # reactive data -----------------------------------------------------------
     data_plot <- reactive({
       
       
       
-      if(input$by == "Cidade_componente"){
+      if(input$by == "Cidade_Abordagem"){
         
-        agrupar_por <- c("Cidade", "Componente", "Status")
+        agrupar_por <- c("Cidade", "Abordagem", "Status")
         
-      } else if (input$by %in% c("Cidade", "Componente")){
+        
+      } else if (input$by == "Componente"){
+        
+        
+        sgr <- data_totais %>% 
+          dplyr::filter(str_detect(Abordagem, "SGR")) %>%
+          mutate(Componente = "SGR")
+        
+        
+        fnm <- data_totais  %>% 
+          dplyr::filter(str_detect(Abordagem, "FNM")) %>%
+          mutate(Componente = "FNM")
+        
+        data_totais <- rbind(sgr, fnm)
+        
+        print(names(data_totais))
+        
+        agrupar_por <- c("Componente", "Status")
+        
+        
+      } else if (input$by %in% c("Cidade", "Abordagem")){
         
         agrupar_por <- c(input$by, "Status")
       } else {
@@ -117,7 +161,8 @@ serverTotals<- function(id, dir_data) {
       data_plot <- data_totais %>%
         group_by_at(agrupar_por) %>%
         summarise(value = sum(value),
-                  .groups = 'drop')
+                  .groups = 'drop') %>%
+       dplyr::filter(Status %in% status_vector[as.numeric(input$check_group)])
       
       
     })
@@ -177,10 +222,23 @@ tags$ul(
                      label = value,
                      color = Status)
           )
-      } else if (input$by %in% c("Componente","Cidade_componente")){
+        
+        
+      } else if (input$by == "Componente"){
         
         base_plot <- data_plot() %>% 
           ggplot(aes(x = Componente,
+                     y = value,
+                     fill = Status,
+                     label = value,
+                     color = Status)
+          )
+        
+        
+      } else if (input$by %in% c("Abordagem","Cidade_Abordagem")){
+        
+        base_plot <- data_plot() %>% 
+          ggplot(aes(x = Abordagem,
                      y = value,
                      fill = Status,
                      label = value,
@@ -195,7 +253,7 @@ tags$ul(
                    shape = 21) +
         geom_text(hjust = -.5) 
       
-      if(input$by == "Cidade_componente"){
+      if(input$by == "Cidade_Abordagem"){
         
         plot <- plot +
           facet_wrap(~Cidade,
