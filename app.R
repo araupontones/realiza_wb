@@ -34,33 +34,33 @@ ui <- fluidPage(
                         
              ),
              
-             navbarMenu(
-               "Evolução de Participação",
-               
-               #Semanal --------------------------------------------------------
-               "Semanal",
-               tabPanel( 
-                 "Evolução semanal",
-                 ui_evolucao("evolucao_semanal", "Semana")
-               ),
-               tabPanel("Essa Semana",
-                        ui_essa_semana("essa_samana", "Semana")
-                        
-               ),
-              
-               
-               
-               #mensal ----------------------------------------------------------
-               "Mensal",
-               tabPanel( "Evolução mensual",
-                         ui_evolucao("evolucao_mensal", "Mes")
-               ),
-               tabPanel("Esse Mes",
-                        ui_essa_semana("esse_mes", "Mes")
-                        
-               )
-               
-              
+             # navbarMenu(
+             #   "Evolução de Participação",
+             #   
+             #   #Semanal --------------------------------------------------------
+             #   "Semanal",
+             #   tabPanel( 
+             #     "Evolução semanal",
+             #     ui_evolucao("evolucao_semanal", "Semana")
+             #   ),
+             #   tabPanel("Essa Semana",
+             #            ui_essa_semana("essa_samana", "Semana")
+             #            
+             #   ),
+             #  
+             #   
+             #   
+             #   #mensal ----------------------------------------------------------
+             #   "Mensal",
+             #   tabPanel( "Evolução mensual",
+             #             ui_evolucao("evolucao_mensal", "Mes")
+             #   ),
+             #   tabPanel("Esse Mes",
+             #            ui_essa_semana("esse_mes", "Mes")
+             #            
+             #   )
+             #   
+             #  
                
                
                # tabPanel("Presencas",
@@ -69,7 +69,7 @@ ui <- fluidPage(
                #)
                
                
-             ),
+             #),
              
              tabPanel("Participacao SGR",
                       ui_participacaoSGR("part_sgr")
