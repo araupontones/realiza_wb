@@ -121,7 +121,7 @@ server <- function(input, output, session) {
   
   output$last_refreshed <- renderUI({
     
-    text <- paste("Última atualização:", last_refreshed)
+    text <- paste("Last data update:", last_refreshed)
     
     p(text)
   })
