@@ -24,9 +24,9 @@ ui_80_perc <- function(id){
                                choices =  c("Seu Todo", "Por Cidade")
                                
                    ),
-                   radioButtons(NS(id,"radio"), label = h4("Percentagem"),
-                                choices = list("80%" = .8, "70%" = .7, "60%" = .6,
-                                               "50%" = .5, "40%" = .4), 
+                   radioButtons(NS(id,"radio"), label = h4("Sessoes que conseguiu completer"),
+                                choices = list("+ de 80%" = .8, "+ de 70%" = .7, "+ de 60%" = .6,
+                                               "+ de 50%" = .5, "+ de 40%" = .4), 
                                 selected = .4),
                    
                    
@@ -35,7 +35,7 @@ ui_80_perc <- function(id){
       ),
       mainPanel(
         uiOutput(NS(id,"header")),
-        withSpinner(plotOutput(NS(id,"plot")), color = "black")
+        withSpinner(plotlyOutput(NS(id,"plot")), color = "black")
         
       )
     )
@@ -47,7 +47,7 @@ ui_80_perc <- function(id){
 #Server ===================================================================
 
 #Server ======================================================================
-server80Perc<- function(id, dir_data) {
+server80Perc<- function(id, dir_data, dir_lookups) {
   moduleServer(id, function(input, output, session) {
     
     
@@ -100,6 +100,7 @@ server80Perc<- function(id, dir_data) {
         dplyr::filter(Perc >= as.numeric(input$radio)) %>%
         group_by_at(agrupar_por) %>%
         summarise(value = n(),
+                  Emprendedoras = value,
                   .groups = 'drop') 
       
       
@@ -109,10 +110,12 @@ server80Perc<- function(id, dir_data) {
     
     output$header <- renderUI({
       
+      perc <- paste0(as.numeric(input$radio) * 100, "%")
+      
       tags$div(
-        p("A abordagem SGR pede que os participantes participem de 13 sessões obrigatórias. 
-          O gráfico abaixo mostra a proporção de mulheres que compareceram a 80% dessas sessões..
-")
+        p(HTML(glue("A abordagem SGR pede que as participantes participem de 13 sessões obrigatórias. 
+          O gráfico abaixo mostra a proporção de mulheres que compareceram a mais de <b>{perc}</b> dessas sessões.
+")))
 
 
 
@@ -125,7 +128,7 @@ server80Perc<- function(id, dir_data) {
       
     })
     
-    output$plot <- renderPlot({
+    output$plot <- renderPlotly({
       
       print(names(data_plot()))
       upper_limit = max(data_plot()$value)
@@ -137,7 +140,7 @@ server80Perc<- function(id, dir_data) {
           ggplot(aes(x = Abordagem,
                      y = value,
                      fill = Abordagem,
-                     label = value
+                     label = Emprendedoras
                      )
           ) +
           geom_col()
@@ -148,7 +151,7 @@ server80Perc<- function(id, dir_data) {
           ggplot(aes(x = Abordagem,
                      y = value,
                      fill = Abordagem,
-                     label = value
+                     label = Emprendedoras
                     )
           ) +
           geom_col()+
@@ -157,11 +160,19 @@ server80Perc<- function(id, dir_data) {
         
       }
       
-      base_plot +
+      plot <- base_plot +
         labs(y = "Número de emprendedoras",
              x = "") +
         scale_fill_manual(values = c(palette))+
+        scale_y_continuous(labels = function(x){round(x,0)},
+                           limits = c(0,130)
+                           ) +
         theme_realiza()
+      
+      
+      ggplotly(plot,
+               tooltip = c("label")) %>% 
+        config(displayModeBar = F)
       
       # plot <- base_plot +
       #   geom_point(size = 6,
