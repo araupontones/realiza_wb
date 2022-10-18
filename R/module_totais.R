@@ -75,7 +75,7 @@ serverTotals<- function(id, dir_data) {
     ##identify emprendedoras that attended to the primera sessao
     primera<- presencas %>%
       group_by(ID_BM) %>%
-      filter(data_posix == min(data_posix)) %>%
+      #filter(data_posix == min(data_posix)) %>%
       slice(1) %>%
       ungroup() %>%
       mutate(actividade = "Primera sessao") %>%

@@ -70,10 +70,16 @@ ui <- fluidPage(
                
                
              #),
+             navbarMenu("Participacao SGR",
+                        tabPanel("Participacao Sessoes",
+                                 ui_participacaoSGR("part_sgr")
+                        ),
+                        tabPanel("Percentagem de participacao",
+                                 
+                                 ui_80_perc("perc_80"))
+                        
+                        )
              
-             tabPanel("Participacao SGR",
-                      ui_participacaoSGR("part_sgr")
-                      )
             
              
              # navbarMenu("Participação Actividades",
@@ -138,6 +144,7 @@ server <- function(input, output, session) {
   #See consistency in panels_FNM.R | Panels_SGR.R | Panels_SGR_FNM.R
 
   serverParticipacaoSGR("part_sgr", dir_data, db_emprendedoras = emprendedoras, periodo = "Semana" )
+  server80Perc("perc_80", dir_data)
   
   observe({
     
