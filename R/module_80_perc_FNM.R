@@ -25,9 +25,10 @@ ui_80_percFNM <- function(id){
                                
                    ),
                    radioButtons(NS(id,"radio"), label = h4("Sessoes que conseguiu completer"),
-                                choices = list("+ de 50%" = .5, "+ de 40%" = .4, "+ de 30%" = .3,
-                                               "+ de 20%" = .2, "+ de 10%" = .1), 
-                                selected = .4),
+                                choices = list("+ de 80%" = .8, "+ de 70%" = .7,
+                                               "+ de 60%" = .6, "+ de 50%" = .5, 
+                                               "+ de 40%" = .4, "+ de 30%" = .3), 
+                                selected = .3),
                    
                    
                    
