@@ -34,42 +34,7 @@ ui <- fluidPage(
                         
              ),
              
-             # navbarMenu(
-             #   "Evolução de Participação",
-             #   
-             #   #Semanal --------------------------------------------------------
-             #   "Semanal",
-             #   tabPanel( 
-             #     "Evolução semanal",
-             #     ui_evolucao("evolucao_semanal", "Semana")
-             #   ),
-             #   tabPanel("Essa Semana",
-             #            ui_essa_semana("essa_samana", "Semana")
-             #            
-             #   ),
-             #  
-             #   
-             #   
-             #   #mensal ----------------------------------------------------------
-             #   "Mensal",
-             #   tabPanel( "Evolução mensual",
-             #             ui_evolucao("evolucao_mensal", "Mes")
-             #   ),
-             #   tabPanel("Esse Mes",
-             #            ui_essa_semana("esse_mes", "Mes")
-             #            
-             #   )
-             #   
-             #  
-               
-               
-               # tabPanel("Presencas",
-               #          ui_summary("summary")
-               
-               #)
-               
-               
-             #),
+            
              navbarMenu("Participação SGR",
                         tabPanel("Participação Sessoes",
                                  ui_participacaoSGR("part_sgr")
@@ -78,28 +43,14 @@ ui <- fluidPage(
                                  
                                  ui_80_perc("perc_80"))
                         
-                        )
+                        ),
+             tabPanel("Participação FNM",
+                      ui_80_percFNM("perc_80_fnm")
+             )
              
             
              
-             # navbarMenu("Participação Actividades",
-             #            
-             #            tabPanel("Semanal",
-             #                     ui_evolucao_actividades("evolucao_semanal_act", "Semana")),
-             #            tabPanel("Mensal",
-             #                     ui_evolucao_actividades("evolucao_mensal_act", "Mes"))
-             #            
-             # )
-             # panels_FNM("FNM"),
-             # 
-             # panels_SGR("SGR"),
-             # 
-             # panels_SGR_FNM("FNM + SGR")
-             
-             
-             
-             
-             
+            
              
              
   )
@@ -143,8 +94,9 @@ server <- function(input, output, session) {
   #For this to work the name id of the uis and values of panel should be consisten
   #See consistency in panels_FNM.R | Panels_SGR.R | Panels_SGR_FNM.R
 
-  serverParticipacaoSGR("part_sgr", dir_data, db_emprendedoras = emprendedoras, periodo = "Semana" )
-  server80Perc("perc_80", dir_data, dir_lookups)
+ 
+  
+  
   
   observe({
     
@@ -155,7 +107,22 @@ server <- function(input, output, session) {
       
       serverTotals("Totals", dir_data)
       
-    } else if(activo == "Essa Semana") {
+    }
+    
+    else if (activo == "Participação Sessoes"){
+      
+      serverParticipacaoSGR("part_sgr", dir_data, db_emprendedoras = emprendedoras, periodo = "Semana" )
+    }
+    
+    else if(activo == "Sessoes completas"){
+      server80Perc("perc_80", dir_data, dir_lookups)
+    }
+    
+    else if(activo == "Participação FNM"){
+      server80PercFNM("perc_80_fnm", dir_data, dir_lookups)
+      
+    }
+    else if(activo == "Essa Semana") {
       
       serverEssaSemana("essa_samana", dir_data, emprendedoras, periodo = "Semana")
       
