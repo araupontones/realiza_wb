@@ -53,12 +53,13 @@ server80Perc<- function(id, dir_data, dir_lookups) {
     
     ## read look up of number of modules
     modulos <- rio::import(file.path(dir_lookups, "sessoes.rds"))
-    num_modulos <- nrow(modulos)
+    num_modulos <- nrow(modulos) + 1
     
     ## read presencas de SGR 
     presencas <- create_data_presencas(dir_lookups, dir_data, c("Presente")) %>%
       dplyr::filter(Abordagem != "FNM",
-                    actividade_label == "Modulos Obligatorios") %>%
+                    (actividade_label == "Modulos Obligatorios"| actividade == "Sessões de coaching")) %>%
+      filter(!actividade %in% c("Eventos de networking", "Feira Financeira")) %>%
       #drop duplicates
       group_by(ID_BM, actividade) %>%
       slice(1) %>%

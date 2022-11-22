@@ -14,35 +14,34 @@ lesHalf <- "#AAF2BB"
 
 emprendedoras <- import(file.path(dir_lookups,"emprendedoras.rds"))
 
-
-
+modulos <- rio::import(file.path(dir_lookups, "sessoes.rds"))
+num_modulos <- nrow(modulos)
+num_modulos
+modulos
 #Load Presencas
 
 presencas <- create_data_presencas(dir_lookups, dir_data, c("Presente") )
-View(sgr)
-tabyl(presencas, actividade)
+num_modulos = 13 + 1
+
 #Track progress of emprendedoras agains targets
-sgr <- presencas %>%
-  #remove modulos (because it is SGR)
-  filter(actividade == "Modulos Obligatorios",
-         Abordagem != "FNM") %>%
-  #Count presencas by actividade
-  group_by(ID_BM,Cidade,Abordagem) %>%
-  summarise(presente = sum(presente),
-            .groups = 'drop') %>%
-mutate(completos = factor(as.character(presente),
-                          levels = as.character(seq(1,12)),
-                          ordered = T
-                          )
-       ) %>%
-  #Count by cidade
-  group_by(Cidade, Abordagem, completos) %>%
-  summarise(mulheres = n(),
+## read presencas de SGR 
+presencas <- create_data_presencas(dir_lookups, dir_data, c("Presente")) %>%
+  dplyr::filter(Abordagem != "FNM",
+                (actividade_label == "Modulos Obligatorios"| actividade == "Sessões de coaching")) %>%
+  filter(!actividade %in% c("Eventos de networking", "Feira Financeira")) %>%
+  #drop duplicates
+  group_by(ID_BM, actividade) %>%
+  slice(1) %>%
+  ungroup() %>%
+  group_by(ID_BM) %>%
+  summarise(Perc = sum(presente)/ num_modulos,
+            Cidade = first(Cidade),
+            Abordagem = first(Abordagem),
             .groups = 'drop')
 
-  
+View(presencas)
 
-#count emprendedoras por
+  #count emprendedoras por
 #by<- "Seu todo"
 by <- "Por Cidade"
 #by <- "Por Abordagem"

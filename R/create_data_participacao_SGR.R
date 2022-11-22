@@ -82,7 +82,8 @@ create_data_participacao_SGR <- function(db_sgr,db_emprendedoras, by){
                                           "2.1", "2.2", "2.3",
                                           "Sessao intercalar de parceiros",  
                                           "3.1", "3.2", "3.3",
-                                          "Sessao de encerramento de parceiros"
+                                          "Sessao de encerramento de parceiros",
+                                          "Sessões de coaching"
                                           ),
                                ordered = T
                                

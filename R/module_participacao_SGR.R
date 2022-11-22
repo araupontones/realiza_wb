@@ -79,7 +79,8 @@ serverParticipacaoSGR<- function(id, dir_data, db_emprendedoras, periodo = "Sema
       #keeps all status(Presente, Ausente y Pendente), creates month, names all modulos as modulos obligatorios
       
       presencas <- create_data_presencas(dir_lookups, dir_data, c("Presente")) %>%
-        dplyr::filter(actividade_label == "Modulos Obligatorios") %>%
+        dplyr::filter(actividade_label == "Modulos Obligatorios" | actividade == "Sessões de coaching") %>%
+        filter(!actividade %in% c("Eventos de networking", "Feira Financeira")) %>%
         mutate(mulheres = 1)
       
   
@@ -224,7 +225,7 @@ serverParticipacaoSGR<- function(id, dir_data, db_emprendedoras, periodo = "Sema
     output$header <- renderUI({
       
       HTML(
-        glue("<h5>que participaram de cada sessão. A linha preta indica o número de mulheres incluídas nas listas do Banco Mundial. </h5>")
+        glue("<h5>Número de mulheres que participaram de cada sessão. A linha preta indica o número de mulheres incluídas nas listas do Banco Mundial. </h5>")
         
       )
     })
