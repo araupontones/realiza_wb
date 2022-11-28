@@ -15,6 +15,7 @@ actividades <- import(file.path(dir_lookups,"actividades.rds")) %>%
   select(actividade, sessoes) %>%
   distinct()
 
+
 #emprendedoras 
 emprendedoras <- import(file.path(dir_lookups,"emprendedoras.rds"))
 
@@ -22,6 +23,7 @@ emprendedoras <- import(file.path(dir_lookups,"emprendedoras.rds"))
 #Load Presencas
 
 presencas <- create_data_presencas(dir_lookups, dir_data, c("Presente") )
+
 
 categories <- c("Has not participated","Less than half", "More than half", "Completed all sessoes")
 #Track progress of emprendedoras agains targets
@@ -51,6 +53,7 @@ fnm <- presencas %>%
 
   
 
+
 #count emprendedoras por
 #by<- "Seu todo"
 #by <- "Por Cidade"
@@ -60,12 +63,19 @@ by <- "Por Abordagem"
 
 
 names(fnm)
-data_plot <- create_data_progress_FNM(fnm, by)
+by = "Seu todo"
+cats = c("Ainda não participou","Participou em MENOS da metade das sessões",
+         "Participou em MAIS de metade das sessões", "Completou todas as sessões")
+
+
+data_plot <- create_data_progress_FNM(fnm, db_emprendedoras = emprendedoras,by = "Seu todo", cats = cats)
  
+
 
 
 todo <- data_plot$target[1] == "Seu todo"
 
+plot
 #Plot--------------------------------------------------------------------------
 plot <- data_plot %>%
   ggplot(aes

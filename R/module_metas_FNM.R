@@ -118,11 +118,14 @@ serverMetasFNM<- function(id, dir_data, db_emprendedoras) {
     fnm <- reactive({
       
       print(categories())
+     
       #create data of presencas
       #imports clean/all_presencas.rds
       #keeps all status(Presente, Ausente y Pendente), creates month, names all modulos as modulos obligatorios
       presencas <- create_data_presencas(dir_lookups, dir_data, c("Presente") )
       #Track progress of emprendedoras agains targets
+      
+      print(tabyl(presencas, actividade))
       fnm <- presencas %>%
         #remove modulos (because it is SGR)
         filter(actividade_label != "Modulos Obligatorios",
@@ -146,6 +149,8 @@ serverMetasFNM<- function(id, dir_data, db_emprendedoras) {
         group_by(Cidade, Abordagem,actividade, progress) %>%
         summarise(mulheres = n(),
                   .groups = 'drop')
+      
+    
       
       fnm
       
