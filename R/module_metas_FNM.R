@@ -45,7 +45,7 @@ ui_metas_fnm <- function(id){
             
       ),
       mainPanel(
-        p("Para cada tipo de atividade de FNM, espera-se que cada mulher compareça a um número de sessões obrigatórias.
+        p("Para cada tipo de atividade de FNM, espera-se que cada emprendedora compareça a um número de sessões obrigatórias.
           O número de sessões obrigatórias que as mulheres devem participar para cada atividade é o seguinte"),
      
         
