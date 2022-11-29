@@ -22,6 +22,7 @@ create_data_presencas <- function(dir_lookups, dir_data, keep = "Presente"){
     mutate(#actividade = ifelse(is.na(actividade_label) | actividade == "Sessão Inaugural", actividade, actividade_label),
            actividade_label = case_when(actividade == "De mulher para mulher: Conecta!" ~ "Conecta",
                                         actividade == "Eventos de matchmaking" ~ "Matchmaking",
+                                        actividade == "Eventos de networking" ~ "Networking",
                                         #feira financeira
                                         actividade == "Feira Financeira" ~ "Feira",
                                         actividade == "Modulos Obligatorios" ~ "Modulos",
