@@ -9,6 +9,8 @@ define_dir_master <- function(){
   if(sistema == "Windows"){
     
     dir_master <- file.path(dirname(getwd()), "realiza")
+   
+    
     
   } else {
     

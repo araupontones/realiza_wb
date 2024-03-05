@@ -73,6 +73,11 @@ server <- function(input, output, session) {
   emprendedoras <- import(file.path(dir_lookups,"emprendedoras.rds"))
   
   
+  ## gravar as base de dados.
+  all_presencas <- readRDS(paste(dir_master, "data/1.zoho/3.clean/all_presencas.rds", sep ="/"))
+  fnm_presenca <- readRDS(paste(dir_master, "data/1.zoho/3.clean/fnm.rds", sep ="/"))
+  sgr_presencas <- readRDS(paste(dir_master, "data/1.zoho/3.clean/sgr.rds", sep ="/"))
+  
   
   last_refreshed <- rio::import(file.path(dir_data,"2.Dashboard/last_refreshed.rds"))
   
